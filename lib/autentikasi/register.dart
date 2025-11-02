@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/constants/colors.dart';
-import 'package:polispace/mahasiswa/home_mahasiswa.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nimController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  void _login() {
+  String? _selectedRole;
+
+  final List<String> _roleOptions = ['Mahasiswa', 'Dosen'];
+
+  void _register() {
     if (_formKey.currentState!.validate()) {
       // Disini bisa ditambahkan logic login sebenarnya
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Login berhasil!')));
     }
-
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeMahasiswa()));
   }
 
   @override
@@ -38,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: const Text(
-                  'Sign in to',
+                  'Sign up to',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -57,10 +61,79 @@ class _LoginPageState extends State<LoginPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Username or email address',
-                    style: TextStyle(fontSize: 16),
+                  const Text('Role', style: TextStyle(fontSize: 16)),
+                  DropdownButtonFormField<String>(
+                    value: _selectedRole,
+                    decoration: const InputDecoration(
+                      labelText: 'Pilih Role',
+                      prefixIcon: Icon(
+                        Icons.people,
+                        color: AppColors.secondary,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.textLight),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                    ),
+                    items: _roleOptions.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedRole = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Silakan pilih role';
+                      }
+                      return null;
+                    },
                   ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('NIM/NIDN', style: TextStyle(fontSize: 16)),
+                  TextFormField(
+                    controller: _nimController,
+                    decoration: InputDecoration(
+                      labelText: 'NIM/NIDN',
+                      prefixIcon: Icon(
+                        Icons.people,
+                        color: AppColors.secondary,
+                      ),
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.textLight),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Email', style: TextStyle(fontSize: 16)),
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -90,6 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
+
               SizedBox(height: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,6 +197,46 @@ class _LoginPageState extends State<LoginPage> {
                       return null;
                     },
                   ),
+                  const Text(
+                    'Password must be at least 8 characters long to ensure your account remains secure and protected.',
+                    style: TextStyle(fontSize: 14, color: AppColors.textLight),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Confirm Password',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.textLight),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                    ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value != _passwordController.text) {
+                        return 'Password tidak sesuai';
+                      }
+                      return null;
+                    },
+                  ),
                 ],
               ),
 
@@ -130,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _login,
+                  onPressed: _register,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -143,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                       vertical: 20,
                     ),
                   ),
-                  child: Text('Sign In'),
+                  child: Text('Sign Up'),
                 ),
               ),
               SizedBox(height: 10),
@@ -153,15 +267,15 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'New to Polispace?',
+                      'Already have an account?',
                       style: TextStyle(fontSize: 14),
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/signup');
+                        Navigator.pushNamed(context, '/signin');
                       },
                       child: const Text(
-                        'Create an account',
+                        'Sign In',
                         style: TextStyle(
                           color: AppColors.secondary,
                           fontSize: 14,

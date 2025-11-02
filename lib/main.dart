@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/splash.dart';
+import 'package:polispace/mahasiswa/listroom.dart';
+import 'package:polispace/autentikasi/login.dart';
+import 'package:polispace/autentikasi/register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +20,10 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
+      routes: {
+        '/signup': (context) => RegisterPage(),
+        '/signin': (context) => LoginPage(),
+      },
     );
   }
 }
