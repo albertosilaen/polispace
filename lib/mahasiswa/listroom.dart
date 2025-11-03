@@ -1,16 +1,58 @@
 import 'package:flutter/material.dart';
 
-class RuanganPage extends StatelessWidget {
+class RuanganPage extends StatefulWidget {
   const RuanganPage({super.key});
 
   @override
+  State<RuanganPage> createState() => _RuanganPageState();
+}
+
+class _RuanganPageState extends State<RuanganPage> {
+  // List kategori
+  final List<String> categories = ["Gedung Utama", "Tower A", "Techno", "RTF"];
+
+  // Kategori yang sedang aktif
+  String selectedCategory = "Gedung Utama";
+
+  // Data ruangan per kategori
+  final Map<String, List<String>> roomsByCategory = {
+    "Gedung Utama": [
+      "GU 601, Ruang Komputer",
+      "GU 602, Ruang Kelas",
+      "GU 605, Ruang Animasi",
+      "GU 701, Ruang Tata Usaha",
+      "GU 702, Ruang Komputer",
+      "GU 705, Ruang Rendering",
+    ],
+    "Tower A": [
+      "TA 101, Ruang Dosen",
+      "TA 102, Ruang Rapat",
+      "TA 201, Ruang Kelas",
+      "TA 202, Ruang Multimedia",
+    ],
+    "Techno": [
+      "TC 301, Lab Elektronika",
+      "TC 302, Ruang Proyek",
+      "TC 303, Ruang Server",
+    ],
+    "RTF": [
+      "RTF 401, Ruang Produksi",
+      "RTF 402, Ruang Editing",
+      "RTF 403, Studio Rekaman",
+    ],
+  };
+
+  @override
   Widget build(BuildContext context) {
+    // Ambil list ruangan berdasarkan kategori aktif
+    final List<String> currentRooms = roomsByCategory[selectedCategory] ?? [];
+
     return Scaffold(
-      backgroundColor: const Color(0xFFD6C6FF), // Warna ungu muda background
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            // Bagian atas abu-abu dengan info Gedung dan Ruang
+            // Bagian atas abu-abu
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
@@ -26,7 +68,6 @@ class RuanganPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Bagian Gedung
                       Expanded(
                         child: Column(
                           children: const [
@@ -48,15 +89,7 @@ class RuanganPage extends StatelessWidget {
                           ],
                         ),
                       ),
-
-                      // Garis pemisah
-                      Container(
-                        width: 2,
-                        height: 70,
-                        color: Colors.black26,
-                      ),
-
-                      // Bagian Ruang
+                      Container(width: 2, height: 70, color: Colors.black26),
                       Expanded(
                         child: Column(
                           children: const [
@@ -91,61 +124,57 @@ class RuanganPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Tombol filter kategori gedung
+            // Tombol kategori gedung
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildCategoryButton("Gedung Utama", true),
-                  _buildCategoryButton("Tower A", false),
-                  _buildCategoryButton("Techno", false),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(
+                          categories.length,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(right: 5),
+                            child: _buildCategoryButton(
+                              categories[index],
+                              selectedCategory == categories[index],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      backgroundColor: const Color(0xFF2D71F8),
+                    ),
+                    child: const Icon(Icons.add, color: Colors.white),
+                  ),
                 ],
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // List Ruangan
+            // List ruangan sesuai kategori
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  _buildRoomItem("GU 601, Ruang Komputer"),
-                  _buildRoomItem("GU 602, Ruang Kelas"),
-                  _buildRoomItem("GU 605, Ruang Animasi"),
-                  _buildRoomItem("GU 701, Ruang Tata Usaha"),
-                  _buildRoomItem("GU 702, Ruang Komputer"),
-                  _buildRoomItem("GU 705, Ruang Rendering"),
+                  for (final room in currentRooms) _buildRoomItem(room),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2D71F8),
+                    ),
+                    child: Icon(Icons.add, color: Colors.white),
+                  ),
                 ],
-              ),
-            ),
-
-            // Tombol Tambah
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 45,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6EFF6E),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  onPressed: () {
-                    // Aksi tambah ruangan
-                  },
-                  child: const Text(
-                    "+",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
               ),
             ),
           ],
@@ -156,26 +185,26 @@ class RuanganPage extends StatelessWidget {
 
   // Widget helper untuk tombol kategori
   Widget _buildCategoryButton(String title, bool isActive) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: isActive ? Colors.grey.shade400 : Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(20),
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedCategory = title;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isActive
+            ? const Color(0xFF2D71F8)
+            : Colors.grey.shade400,
+        foregroundColor: Colors.white,
       ),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: isActive ? Colors.black : Colors.black54,
-        ),
-      ),
+      child: Text(title),
     );
   }
 
   // Widget helper untuk item ruangan
   Widget _buildRoomItem(String name) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.grey.shade300,
