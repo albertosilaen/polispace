@@ -40,6 +40,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   dropdown_button2: ^2.3.9
   intl: ^0.20.2
+  url_strategy: ^0.2.0
 
 flutter_icons:
   android: true

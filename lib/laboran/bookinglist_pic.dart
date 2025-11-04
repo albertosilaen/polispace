@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ListPengajuan extends StatelessWidget {
-  const ListPengajuan({super.key});
+class ListPengajuanPIC extends StatelessWidget {
+  const ListPengajuanPIC({super.key});
 
   @override
   Widget build(BuildContext context) {

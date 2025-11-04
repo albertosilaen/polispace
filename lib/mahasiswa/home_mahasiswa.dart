@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/mahasiswa/listroom.dart';
+import 'package:polispace/mahasiswa/statusbooking.dart';
 
 class HomeMahasiswa extends StatelessWidget {
   const HomeMahasiswa({super.key});
@@ -64,7 +66,7 @@ class HomeMahasiswa extends StatelessWidget {
                       title: 'Peminjaman Ruangan',
                       subtitle: 'Ajukan peminjaman ruangan',
                       onTap: () {
-                        // Aksi ketika menu ditekan
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => RuanganPage()));
                       },
                     ),
                     SizedBox(height: 20),
@@ -74,7 +76,7 @@ class HomeMahasiswa extends StatelessWidget {
                       title: 'Status Peminjaman',
                       subtitle: 'Status pengajuan ruangan anda',
                       onTap: () {
-                        // Aksi ketika menu ditekan
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryPage()));
                       },
                     ),
                   ],

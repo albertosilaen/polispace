@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/constants/colors.dart';
-import 'package:polispace/mahasiswa/room_submission.dart';
 
-class RoomStatus extends StatelessWidget {
-  const RoomStatus({super.key});
+class RoomStatusPJ extends StatelessWidget {
+  const RoomStatusPJ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +70,6 @@ class RoomStatus extends StatelessWidget {
         containerHeight + (MediaQuery.of(context).size.height * 0.05);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        leading: BackButton(),
-      ),
       body: Column(
         children: [
           Container(
@@ -114,7 +109,7 @@ class RoomStatus extends StatelessWidget {
                           Text(group['dateid'], style: TextStyle(fontSize: 14)),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => RoomSubmission()));
+                              print("Button pressed!");
                             },
                             child: Container(
                               width: 20,

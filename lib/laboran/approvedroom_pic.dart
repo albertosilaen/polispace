@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/constants/colors.dart';
 
-class VerifyRoomPage extends StatelessWidget {
-  const VerifyRoomPage({super.key});
+class VerifyRoomPagePIC extends StatelessWidget {
+  const VerifyRoomPagePIC({super.key});
 
   @override
   Widget build(BuildContext context) {

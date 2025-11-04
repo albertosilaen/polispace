@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/autentikasi/login.dart';
 import 'package:polispace/constants/colors.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -18,7 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String? _selectedRole;
 
-  final List<String> _roleOptions = ['Mahasiswa', 'Dosen'];
+  final List<String> _roleOptions = ['Mahasiswa', 'Dosen', 'PIC'];
 
   void _register() {
     if (_formKey.currentState!.validate()) {
@@ -272,7 +273,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/signin');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
                       },
                       child: const Text(
                         'Sign In',

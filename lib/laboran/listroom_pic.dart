@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:polispace/mahasiswa/room_status.dart';
 
-class RuanganPage extends StatefulWidget {
-  const RuanganPage({super.key});
+class RuanganPICPage extends StatefulWidget {
+  const RuanganPICPage({super.key});
 
   @override
-  State<RuanganPage> createState() => _RuanganPageState();
+  State<RuanganPICPage> createState() => _RuanganPICPageState();
 }
 
-class _RuanganPageState extends State<RuanganPage> {
+class _RuanganPICPageState extends State<RuanganPICPage> {
   // List kategori
   final List<String> categories = ["Gedung Utama", "Tower A", "Techno", "RTF"];
 
@@ -49,10 +48,7 @@ class _RuanganPageState extends State<RuanganPage> {
     final List<String> currentRooms = roomsByCategory[selectedCategory] ?? [];
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFE5E5E5),
-        leading: BackButton(),
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -150,6 +146,15 @@ class _RuanganPageState extends State<RuanganPage> {
                       ),
                     ),
                   ),
+
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      backgroundColor: const Color(0xFF2D71F8),
+                    ),
+                    child: const Icon(Icons.add, color: Colors.white),
+                  ),
                 ],
               ),
             ),
@@ -158,10 +163,17 @@ class _RuanganPageState extends State<RuanganPage> {
 
             // List ruangan sesuai kategori
             Expanded(
-              child: ListView(  
+              child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
                   for (final room in currentRooms) _buildRoomItem(room),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2D71F8),
+                    ),
+                    child: Icon(Icons.add, color: Colors.white),
+                  ),
                 ],
               ),
             ),
@@ -190,23 +202,17 @@ class _RuanganPageState extends State<RuanganPage> {
   }
 
   // Widget helper untuk item ruangan
-  Widget _buildRoomItem(String name, {VoidCallback? onTap}) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20), // agar ripple mengikuti bentuk
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => RoomStatus()));
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          name,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
+  Widget _buildRoomItem(String name) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        name,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
       ),
     );
   }

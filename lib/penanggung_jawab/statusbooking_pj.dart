@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
+class HistoryPagePJ extends StatelessWidget {
+  const HistoryPagePJ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +34,6 @@ class HistoryPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: BackButton(),
-      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
