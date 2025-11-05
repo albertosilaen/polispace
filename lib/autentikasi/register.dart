@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:polispace/service/auth_service.dart';
 import 'package:polispace/autentikasi/login.dart';
 import 'package:polispace/constants/colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
