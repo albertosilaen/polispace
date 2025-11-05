@@ -75,7 +75,7 @@ class RoomStatus extends StatelessWidget {
         backgroundColor: AppColors.primary,
         leading: BackButton(),
       ),
-      body: Column(
+      body: ListView(
         children: [
           Container(
             width: double.infinity,
@@ -209,7 +209,7 @@ class RoomStatus extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )
     );
   }
 }

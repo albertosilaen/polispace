@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/mahasiswa/home_mahasiswa.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -36,7 +37,15 @@ class HistoryPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: BackButton(),
+        leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeMahasiswa()),
+        );
+        },
+      ),
       ),
       body: SafeArea(
         child: Padding(

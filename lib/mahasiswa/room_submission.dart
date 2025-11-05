@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:polispace/constants/colors.dart';
+import 'package:polispace/mahasiswa/statusbooking.dart';
 
 class RoomSubmission extends StatefulWidget {
   @override
@@ -122,7 +123,14 @@ class _RoomSubmissionState extends State<RoomSubmission> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Berhasil melakukan pengajuan')));
+      
     }
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HistoryPage()),
+      );
+    });
   }
 
   @override

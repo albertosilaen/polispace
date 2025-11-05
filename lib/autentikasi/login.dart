@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/autentikasi/register.dart';
 import 'package:polispace/constants/colors.dart';
+import 'package:polispace/mahasiswa/home_mahasiswa.dart';
 import 'package:polispace/penanggung_jawab/bookinglist_pj.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -50,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const ListPengajuanPJ()),
+            MaterialPageRoute(builder: (context) => const HomeMahasiswa()),
           );
         } else {
           if (!mounted) return;
