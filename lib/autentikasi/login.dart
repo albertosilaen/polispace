@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/constants/colors.dart';
-import 'package:polispace/mahasiswa/home_mahasiswa.dart';
+import 'package:polispace/penanggung_jawab/bookinglist_pj.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,18 +12,48 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
-      // Disini bisa ditambahkan logic login sebenarnya
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login berhasil!')));
-    }
+      final supabase = Supabase.instance.client;
+      final code = _codeController.text.trim();
+      final password = _passwordController.text.trim();
 
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeMahasiswa()));
+      final response = await supabase
+          .from('tblProfile')
+          .select('UserID, Email')
+          .eq('Code', code)
+          .maybeSingle();
+
+      if (response == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Kode tidak ditemukan')));
+        return;
+      }
+
+      // Lanjut login
+      final loginResponse = await supabase.auth.signInWithPassword(
+        email: response['Email'],
+        password: password,
+      );
+
+      if (loginResponse.user != null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ListPengajuanPJ()),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login gagal')));
+      }
+    }
   }
 
   @override
@@ -57,15 +88,12 @@ class _LoginPageState extends State<LoginPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Username or email address',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  const Text('Code', style: TextStyle(fontSize: 16)),
                   TextFormField(
-                    controller: _emailController,
+                    controller: _codeController,
                     decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email, color: AppColors.secondary),
+                      labelText: 'Masukkan Kode',
+                      prefixIcon: Icon(Icons.badge, color: AppColors.secondary),
                       border: OutlineInputBorder(),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: AppColors.textLight),
@@ -80,10 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Email tidak boleh kosong';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Email tidak valid';
+                        return 'Kode tidak boleh kosong';
                       }
                       return null;
                     },
