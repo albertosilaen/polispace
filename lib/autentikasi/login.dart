@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/autentikasi/register.dart';
 import 'package:polispace/constants/colors.dart';
 import 'package:polispace/penanggung_jawab/bookinglist_pj.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -21,37 +22,47 @@ class _LoginPageState extends State<LoginPage> {
       final code = _codeController.text.trim();
       final password = _passwordController.text.trim();
 
-      final response = await supabase
-          .from('tblProfile')
-          .select('UserID, Email')
-          .eq('Code', code)
-          .maybeSingle();
+      try {
+        final response = await supabase
+            .from('tblProfile')
+            .select('UserID, Email')
+            .eq('Code', code)
+            .maybeSingle();
 
-      if (response == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Kode tidak ditemukan')));
-        return;
-      }
+        if (response == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Kode tidak ditemukan')));
+          return;
+        }
 
-      // Lanjut login
-      final loginResponse = await supabase.auth.signInWithPassword(
-        email: response['Email'],
-        password: password,
-      );
-
-      if (loginResponse.user != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const ListPengajuanPJ()),
+        final loginResponse = await supabase.auth.signInWithPassword(
+          email: response['Email'],
+          password: password,
         );
-      } else {
+
+        if (loginResponse.user != null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ListPengajuanPJ()),
+          );
+        } else {
+          if (!mounted) return;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Login gagal')));
+        }
+      } catch (error) {
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Login gagal')));
+        ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $error')));
       }
     }
   }
@@ -183,7 +194,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/signup');
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterPage(),
+                          ),
+                        );
                       },
                       child: const Text(
                         'Create an account',
