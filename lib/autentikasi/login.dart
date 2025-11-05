@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/service/auth_service.dart';
 import 'package:polispace/autentikasi/register.dart';
 import 'package:polispace/constants/colors.dart';
 import 'package:polispace/mahasiswa/home_mahasiswa.dart';
 import 'package:polispace/penanggung_jawab/bookinglist_pj.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,54 +16,29 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      final supabase = Supabase.instance.client;
       final code = _codeController.text.trim();
       final password = _passwordController.text.trim();
 
-      try {
-        final response = await supabase
-            .from('tblProfile')
-            .select('UserID, Email')
-            .eq('Code', code)
-            .maybeSingle();
+      final errorMessage = await _authService.loginWithCode(code, password);
 
-        if (response == null) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Kode tidak ditemukan')));
-          return;
-        }
+      if (!mounted) return;
 
-        final loginResponse = await supabase.auth.signInWithPassword(
-          email: response['Email'],
-          password: password,
-        );
-
-        if (loginResponse.user != null) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeMahasiswa()),
-          );
-        } else {
-          if (!mounted) return;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Login gagal')));
-        }
-      } catch (error) {
-        if (!mounted) return;
+      if (errorMessage == null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $error')));
+        ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ListPengajuanPJ()),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     }
   }
@@ -78,16 +53,16 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: Text(
                   'Sign in to',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
               ),
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: Text(
                   'Polispace',
                   style: TextStyle(
                     fontSize: 32,
@@ -96,74 +71,16 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 32),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Code', style: TextStyle(fontSize: 16)),
-                  TextFormField(
-                    controller: _codeController,
-                    decoration: InputDecoration(
-                      labelText: 'Masukkan Kode',
-                      prefixIcon: Icon(Icons.badge, color: AppColors.secondary),
-                      border: OutlineInputBorder(),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.textLight),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: AppColors.secondary,
-                          width: 2,
-                        ),
-                      ),
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Kode tidak boleh kosong';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+              const SizedBox(height: 32),
+              _buildInputField('Code', _codeController, Icons.badge),
+              const SizedBox(height: 10),
+              _buildInputField(
+                'Password',
+                _passwordController,
+                Icons.lock,
+                isPassword: true,
               ),
-              SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Password', style: TextStyle(fontSize: 16)),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
-                      border: OutlineInputBorder(),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.textLight),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: AppColors.secondary,
-                          width: 2,
-                        ),
-                      ),
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                    ),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password tidak boleh kosong';
-                      }
-                      if (value.length < 6) {
-                        return 'Password minimal 6 karakter';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -172,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    textStyle: TextStyle(fontSize: 18),
+                    textStyle: const TextStyle(fontSize: 18),
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
@@ -180,43 +97,79 @@ class _LoginPageState extends State<LoginPage> {
                       vertical: 20,
                     ),
                   ),
-                  child: Text('Sign In'),
+                  child: const Text('Sign In'),
                 ),
               ),
-              SizedBox(height: 10),
-
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'New to Polispace?',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        'Create an account',
-                        style: TextStyle(
-                          color: AppColors.secondary,
-                          fontSize: 14,
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'New to Polispace?',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterPage(),
                         ),
+                      );
+                    },
+                    child: const Text(
+                      'Create an account',
+                      style: TextStyle(
+                        color: AppColors.secondary,
+                        fontSize: 14,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInputField(
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    bool isPassword = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 16)),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: 'Masukkan $label',
+            prefixIcon: Icon(icon, color: AppColors.secondary),
+            border: const OutlineInputBorder(),
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppColors.textLight),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppColors.secondary, width: 2),
+            ),
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+          ),
+          obscureText: isPassword,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return '$label tidak boleh kosong';
+            }
+            if (isPassword && value.length < 6) {
+              return 'Password minimal 6 karakter';
+            }
+            return null;
+          },
+        ),
+      ],
     );
   }
 }

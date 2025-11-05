@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/service/auth_service.dart';
 import 'package:polispace/autentikasi/login.dart';
 import 'package:polispace/constants/colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -19,9 +20,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  final AuthService _authService = AuthService();
   String? _selectedRole;
   List<Map<String, dynamic>> _roles = [];
-  final supabase = Supabase.instance.client;
 
   @override
   void initState() {
@@ -31,11 +32,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _loadRoles() async {
     try {
-      final response = await supabase
-          .from('tblAccess')
-          .select('AccessID, AccessName');
+      final roles = await _authService.getRoles();
       setState(() {
-        _roles = (response as List).cast<Map<String, dynamic>>();
+        _roles = roles;
       });
     } catch (e) {
       print('Error load roles: $e');
@@ -50,59 +49,35 @@ class _RegisterPageState extends State<RegisterPage> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Dapatkan AccessID dari nama role yang dipilih
     final selectedAccess = _roles.firstWhere(
       (r) => r['AccessName'] == _selectedRole,
       orElse: () => {},
     );
+
     final accessID = selectedAccess['AccessID'];
 
-    try {
-      // 1️⃣ Daftar ke Supabase Auth
-      final signUpResponse = await supabase.auth.signUp(
-        email: email,
-        password: password,
-      );
+    final errorMessage = await _authService.register(
+      nim: nim,
+      name: name,
+      email: email,
+      password: password,
+      accessID: accessID,
+    );
 
-      final user = signUpResponse.user;
-      if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal membuat akun Supabase Auth')),
-        );
-        return;
-      }
+    if (!mounted) return;
 
-      // 2️⃣ Simpan ke tabel tblProfile
-      final insertResponse = await supabase.from('tblProfile').insert({
-        'UserID': user.id,
-        'Name': name,
-        'Code': nim,
-        'Email': email,
-        'AccessID': accessID,
-      });
-
+    if (errorMessage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registrasi berhasil! Silakan login.')),
       );
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
-
-      await supabase.auth.signOut();
-    } on AuthException catch (e) {
+    } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Auth error: ${e.message}')));
-    } on PostgrestException catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Database error: ${e.message}')));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
+      ).showSnackBar(SnackBar(content: Text(errorMessage)));
     }
   }
 
@@ -110,26 +85,24 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        // 👈 ini membuat isi di tengah layar
         child: SingleChildScrollView(
-          // agar bisa di-scroll jika keyboard muncul
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // tetap di tengah
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Align(
+                const Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
+                  child: Text(
                     'Sign up to',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                 ),
-                Align(
+                const Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
+                  child: Text(
                     'Polispace',
                     style: TextStyle(
                       fontSize: 32,
@@ -173,46 +146,26 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: (value) =>
                       value == null ? 'Silakan pilih role' : null,
                 ),
-
                 const SizedBox(height: 10),
 
-                /// NIM/NIDN
-                TextFormField(
+                _buildTextField(
                   controller: _nimController,
-                  decoration: const InputDecoration(
-                    labelText: 'NIM/NIDN',
-                    prefixIcon: Icon(Icons.badge, color: AppColors.secondary),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Isi NIM/NIDN' : null,
+                  label: 'NIM/NIDN',
+                  icon: Icons.badge,
                 ),
-
                 const SizedBox(height: 10),
 
-                /// Nama Lengkap
-                TextFormField(
+                _buildTextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nama Lengkap',
-                    prefixIcon: Icon(Icons.people, color: AppColors.secondary),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Isi Nama Lengkap'
-                      : null,
+                  label: 'Nama Lengkap',
+                  icon: Icons.people,
                 ),
-
                 const SizedBox(height: 10),
 
-                /// EMAIL
-                TextFormField(
+                _buildTextField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: AppColors.secondary),
-                    border: OutlineInputBorder(),
-                  ),
+                  label: 'Email',
+                  icon: Icons.email,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Email tidak boleh kosong';
@@ -223,40 +176,21 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 10),
 
-                /// PASSWORD
-                TextFormField(
+                _buildTextField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password tidak boleh kosong';
-                    }
-                    if (value.length < 6) {
-                      return 'Password minimal 6 karakter';
-                    }
-                    return null;
-                  },
+                  label: 'Password',
+                  icon: Icons.lock,
+                  obscure: true,
                 ),
-
                 const SizedBox(height: 10),
 
-                /// CONFIRM PASSWORD
-                TextFormField(
+                _buildTextField(
                   controller: _confirmPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock, color: AppColors.secondary),
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
+                  label: 'Confirm Password',
+                  icon: Icons.lock,
+                  obscure: true,
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'Password tidak sesuai';
@@ -264,10 +198,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
 
-                /// BUTTON REGISTER
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -276,7 +208,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      textStyle: TextStyle(fontSize: 18),
+                      textStyle: const TextStyle(fontSize: 18),
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
@@ -284,13 +216,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         vertical: 20,
                       ),
                     ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    child: const Text('Sign Up'),
                   ),
                 ),
-
                 const SizedBox(height: 12),
 
                 Row(
@@ -316,6 +244,27 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscure = false,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: AppColors.secondary),
+        border: const OutlineInputBorder(),
+      ),
+      validator:
+          validator ??
+          (value) => (value == null || value.isEmpty) ? 'Isi $label' : null,
     );
   }
 }
