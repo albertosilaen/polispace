@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:polispace/autentikasi/login.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,6 +13,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   StreamSubscription<dynamic>? _subscription;
+  final supabase = Supabase.instance.client;
 
   @override
   void initState() {
@@ -20,6 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _startSplash() async {
+    await supabase.auth.signOut();
     // Delay minimal 2 detik
     await Future.delayed(const Duration(seconds: 2));
 
