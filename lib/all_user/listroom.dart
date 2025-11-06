@@ -244,7 +244,6 @@ class _ListRoomPageState extends State<ListRoomPage> {
     );
   }
 
-  /// 🔹 Sekarang `_buildRoomItem` menerima Map berisi RoomID & RoomName
   Widget _buildRoomItem(Map<String, String> room) {
     final roomId = room['RoomID'] as String;
     final roomName = room['RoomName'] as String;
