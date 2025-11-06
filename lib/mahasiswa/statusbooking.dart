@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:polispace/mahasiswa/home_mahasiswa.dart';
+import 'package:polispace/all_user/home.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -38,14 +38,14 @@ class HistoryPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeMahasiswa()),
-        );
-        },
-      ),
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+            );
+          },
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -113,7 +113,7 @@ class HistoryPage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF9BC4FF),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -130,19 +130,28 @@ class HistoryPage extends StatelessWidget {
           Text("Ruangan : $ruangan"),
           Text("Jam     : $jam"),
           Text("Tanggal : $tanggal"),
-          Text("Reason  : $reason",
-              style: TextStyle(
-                fontStyle: reason == '-' ? FontStyle.normal : FontStyle.italic,
-                color: reason == '-' ? Colors.black : Colors.black87,
-              )),
+          Text(
+            "Reason  : $reason",
+            style: TextStyle(
+              fontStyle: reason == '-' ? FontStyle.normal : FontStyle.italic,
+              color: reason == '-' ? Colors.black : Colors.black87,
+            ),
+          ),
           const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              status,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: statusColor,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                status,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: statusColor,
+                ),
               ),
             ),
           ),

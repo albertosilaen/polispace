@@ -39,10 +39,11 @@ class ListPengajuanPJ extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          'Jadwal Penggunaan Ruangan',
+          'Pengajuan Ruangan',
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         centerTitle: true,
@@ -66,7 +67,7 @@ class ListPengajuanPJ extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF9BC4FF),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -96,10 +97,7 @@ class ListPengajuanPJ extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   nama,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: Colors.black54, fontSize: 13),
                 ),
               ],
             ),

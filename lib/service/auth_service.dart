@@ -1,14 +1,17 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:polispace/splash.dart';
 
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   /// 🔹 LOGIN
-  Future<String?> loginWithCode(String code, String password) async {
+  Future<Object?> loginWithCode(String code, String password) async {
     try {
       final response = await _supabase
           .from('tblProfile')
-          .select('UserID, Email')
+          .select('UserID, Email, AccessID')
           .eq('Code', code)
           .maybeSingle();
 
@@ -16,19 +19,29 @@ class AuthService {
         return 'Kode tidak ditemukan';
       }
 
+      // ✅ pastikan jadi Map<String, dynamic>
+      final data = Map<String, dynamic>.from(response);
+
       final loginResponse = await _supabase.auth.signInWithPassword(
-        email: response['Email'],
+        email: data['Email'],
         password: password,
       );
 
       if (loginResponse.user != null) {
-        return null; // sukses
+        return data;
       } else {
-        return 'Login gagal';
+        return null;
       }
     } catch (e) {
       return 'Terjadi kesalahan: $e';
     }
+  }
+
+  Future<void> saveSession(Map<String, dynamic> userData) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('AccessID', userData['AccessID']);
+    await prefs.setString('UserID', userData['UserID']);
+    await prefs.setString('Email', userData['Email']);
   }
 
   /// 🔹 REGISTER
@@ -86,8 +99,25 @@ class AuthService {
   }
 
   /// 🔹 Logout
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
     await _supabase.auth.signOut();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    // Arahkan ke halaman Splash setelah logout
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const SplashScreen()),
+      (route) => false, // hapus semua halaman sebelumnya
+    );
+  }
+
+  Future<void> signOutSplash() async {
+    await _supabase.auth.signOut();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 
   /// 🔹 Ambil user aktif

@@ -1,9 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/constants/colors.dart';
 import 'package:polispace/mahasiswa/room_submission.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class RoomStatus extends StatelessWidget {
-  const RoomStatus({super.key});
+class RoomStatus extends StatefulWidget {
+  final String roomId;
+  final String roomName;
+
+  const RoomStatus({super.key, required this.roomId, required this.roomName});
+
+  @override
+  State<RoomStatus> createState() => _RoomStatusState();
+}
+
+class _RoomStatusState extends State<RoomStatus> {
+  final supabase = Supabase.instance.client;
+  List<Map<String, dynamic>> bookings = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookings();
+  }
+
+  Future<void> _loadBookings() async {
+    try {
+      final dataRoomBooking = await supabase
+          .from('tblRoomBooking')
+          .select('*, tblRoom(RoomName, BuildingID), tblBuilding(BuildingName)')
+          .eq('RoomID', widget.roomId)
+          .order('BookingDate', ascending: true)
+          .order('StartTime', ascending: true);
+
+      setState(() {
+        bookings = List<Map<String, dynamic>>.from(dataRoomBooking);
+        loading = false;
+      });
+    } catch (e) {
+      debugPrint('Error load bookings: $e');
+      setState(() => loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +109,7 @@ class RoomStatus extends StatelessWidget {
         containerHeight + (MediaQuery.of(context).size.height * 0.05);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        leading: BackButton(),
-      ),
+      appBar: AppBar(backgroundColor: AppColors.primary, leading: BackButton()),
       body: ListView(
         children: [
           Container(
@@ -114,7 +149,12 @@ class RoomStatus extends StatelessWidget {
                           Text(group['dateid'], style: TextStyle(fontSize: 14)),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => RoomSubmission()));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RoomSubmission(),
+                                ),
+                              );
                             },
                             child: Container(
                               width: 20,
@@ -209,7 +249,7 @@ class RoomStatus extends StatelessWidget {
             ),
           ),
         ],
-      )
+      ),
     );
   }
 }

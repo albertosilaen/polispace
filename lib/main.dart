@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:polispace/splash.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,7 @@ void main() async {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxrcm5scHlpYm12bW11eWhzYmFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3NDU4MzEsImV4cCI6MjA3NzMyMTgzMX0.-0YNLkK-T2Z9PD5bOrEs_R8drcWmFblLVZzWFAy6tkE',
   );
 
+  await initializeDateFormatting('id_ID', null);
   setPathUrlStrategy();
   runApp(const MyApp());
 }

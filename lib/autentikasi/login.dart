@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:polispace/service/auth_service.dart';
 import 'package:polispace/autentikasi/register.dart';
 import 'package:polispace/constants/colors.dart';
-import 'package:polispace/mahasiswa/home_mahasiswa.dart';
-import 'package:polispace/penanggung_jawab/bookinglist_pj.dart';
+import 'package:polispace/all_user/home.dart';
+import 'package:polispace/penanggung_jawab/home_pj.dart';
+import 'package:polispace/laboran/home_pic.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,28 +20,50 @@ class _LoginPageState extends State<LoginPage> {
   final AuthService _authService = AuthService();
 
   void _login() async {
-    if (_formKey.currentState!.validate()) {
-      final code = _codeController.text.trim();
-      final password = _passwordController.text.trim();
+    if (!_formKey.currentState!.validate()) return;
 
-      final errorMessage = await _authService.loginWithCode(code, password);
+    final code = _codeController.text.trim();
+    final password = _passwordController.text.trim();
 
-      if (!mounted) return;
+    final response = await _authService.loginWithCode(code, password);
 
-      if (errorMessage == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const ListPengajuanPJ()),
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(errorMessage)));
-      }
+    if (!mounted) return;
+
+    if (response is String) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(response)));
+      return;
     }
+
+    if (response is Map<String, dynamic>) {
+      final userRole = response['AccessID'] as int?;
+
+      if (userRole == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Role pengguna tidak ditemukan')),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Home()),
+      );
+
+      await _authService.saveSession(response);
+
+      return;
+    }
+
+    // 4️⃣ Jika hasil null
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Login gagal, periksa kembali akun Anda.')),
+    );
   }
 
   @override
