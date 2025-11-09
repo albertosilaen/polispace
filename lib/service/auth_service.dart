@@ -53,6 +53,16 @@ class AuthService {
     required int accessID,
   }) async {
     try {
+      final getNim = await _supabase
+          .from('tblProfile')
+          .select('Code')
+          .eq('Code', nim)
+          .maybeSingle();
+
+      if (getNim != null) {
+        return 'NIM/NIDN sudah terdaftar';
+      }
+
       // 1️⃣ Register user ke Auth
       final signUpResponse = await _supabase.auth.signUp(
         email: email,

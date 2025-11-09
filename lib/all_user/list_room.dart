@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:polispace/mahasiswa/room_status.dart';
+import 'package:polispace/all_user/detail_room.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -253,7 +253,7 @@ class _ListRoomPageState extends State<ListRoomPage> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                RoomStatus(roomId: roomId, roomName: roomName),
+                RoomDetail(roomId: roomId, roomName: roomName),
           ),
         );
       },
