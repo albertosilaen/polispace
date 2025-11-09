@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/penanggung_jawab/bookinglist_pj.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:polispace/mahasiswa/statusbooking.dart';
+import 'package:polispace/all_user/booking_status.dart';
 import 'package:polispace/all_user/list_room.dart';
 import 'package:polispace/service/auth_service.dart';
 

@@ -51,7 +51,7 @@ class _RoomStatusState extends State<RoomDetail> {
           .from('tblRoomBooking')
           .select('*')
           .eq('RoomID', widget.roomId)
-          .eq('StatusID', 3)
+          .eq('StatusID', 2)
           .order('BookingDate', ascending: true)
           .order('StartTime', ascending: true);
 
