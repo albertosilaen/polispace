@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/all_user/booking_approval_list.dart';
+import 'package:polispace/constants/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:polispace/all_user/booking_status.dart';
 import 'package:polispace/all_user/list_room.dart';
 import 'package:polispace/service/auth_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -137,6 +139,14 @@ class _HomeState extends State<Home> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        leading: IconButton(
+          icon: const Icon(Icons.logout),
+          color: Colors.white,
+          onPressed: _logout,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -144,30 +154,26 @@ class _HomeState extends State<Home> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
-              decoration: const BoxDecoration(
-                color: Color(0xFF9BC4FF),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(36),
-                  bottomRight: Radius.circular(36),
-                ),
-              ),
+              decoration: const BoxDecoration(color: AppColors.primary),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     alignment: Alignment.center,
                     child: Image.asset(
-                      'assets/images/home_mahasiswa.png',
+                      'assets/images/Learning-bro.png',
                       width: 250,
                     ),
                   ),
+                  const SizedBox(height: 16),
+
                   const Text(
-                    'Halo, .......',
+                    'Halo, Fahrizal',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
+                      color: Colors.white,
                     ),
                   ),
                   const Text(
@@ -175,30 +181,29 @@ class _HomeState extends State<Home> {
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontStyle: FontStyle.italic,
-                      fontSize: 12,
-                      color: Color(0xFF1F2937),
+                      fontSize: 14,
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
                   ...menuList, // gunakan spread operator
-
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _logout,
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Logout'),
-                  ),
+                  // const SizedBox(height: 16),
+                  // ElevatedButton(
+                  //   onPressed: _logout,
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: EdgeInsets.symmetric(vertical: 20),
+                  //     backgroundColor: Colors.red,
+                  //     foregroundColor: Colors.white,
+                  //   ),
+                  //   child: const Text('Logout'),
+                  // ),
                 ],
               ),
             ),
@@ -217,19 +222,12 @@ class _HomeState extends State<Home> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF9BC4FF),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 2,
-              offset: Offset(2, 2),
-            ),
-          ],
+          color: AppColors.soft.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
@@ -237,12 +235,12 @@ class _HomeState extends State<Home> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(icon, size: 28, color: Colors.black87),
+              child: Icon(icon, size: 28, color: Colors.white),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -251,15 +249,12 @@ class _HomeState extends State<Home> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
+                    color: AppColors.text,
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF1F2937),
-                  ),
+                  style: const TextStyle(fontSize: 14, color: AppColors.text),
                 ),
               ],
             ),

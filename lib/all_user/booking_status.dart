@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:polispace/all_user/home.dart';
+import 'package:polispace/constants/colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +43,22 @@ class _BookingStatusState extends State<BookingStatus> {
     try {
       final response = await supabase
           .from('tblRoomBooking')
-          .select()
+          .select('''
+          BookingID,
+          BookingDate,
+          StartTime,
+          EndTime,
+          Reason,
+          StatusID,
+          tblRoom (
+            RoomID,
+            RoomName,
+            tblBuilding (
+              BuildingID,
+              BuildingName
+            )
+          )
+        ''')
           .eq('UserID', userId)
           .order('BookingDate', ascending: false);
 
@@ -67,14 +84,27 @@ class _BookingStatusState extends State<BookingStatus> {
     }
   }
 
+  Color getStaturBackColor(int statusId) {
+    switch (statusId) {
+      case 1:
+        return Color(0xFFD9F4F8);
+      case 2:
+        return Color(0xFFD4F4D4);
+      case 3:
+        return Color(0xFFFDE7FE);
+      default:
+        return Colors.grey;
+    }
+  }
+
   Color getStatusColor(int statusId) {
     switch (statusId) {
       case 1:
-        return Colors.orange;
+        return Color(0xFF268DAF);
       case 2:
-        return Colors.green;
+        return Color(0xFF41A06A);
       case 3:
-        return Colors.red;
+        return Color(0xFFFE02B9);
       default:
         return Colors.grey;
     }
@@ -102,18 +132,18 @@ class _BookingStatusState extends State<BookingStatus> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FB),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.primary,
         title: const Text(
           "Riwayat Peminjaman",
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -144,14 +174,19 @@ class _BookingStatusState extends State<BookingStatus> {
                       final item = bookings[index];
                       final statusId = item['StatusID'] ?? 0;
                       return _buildStatusCard(
-                        gedung: item['RoomID']?.split('.')[0] ?? '-',
-                        ruangan: item['RoomID'] ?? '-',
+                        gedung:
+                            item['tblRoom']['tblBuilding']['BuildingName']
+                                ?.split('.')[0] ??
+                            '-',
+                        ruangan:
+                            '${item['tblRoom']['RoomID']} - ${item['tblRoom']['RoomName']}',
                         jam:
                             "${item['StartTime'] ?? '-'} - ${item['EndTime'] ?? '-'}",
                         tanggal: item['BookingDate'] ?? '-',
                         reason: item['Reason'] ?? '-',
                         status: getStatusText(statusId),
                         statusColor: getStatusColor(statusId),
+                        statusBackColor: getStaturBackColor(statusId),
                       );
                     },
                   ),
@@ -169,64 +204,105 @@ class _BookingStatusState extends State<BookingStatus> {
     required String reason,
     required String status,
     required Color statusColor,
+    required Color statusBackColor,
   }) {
     String formattedJam = _formatTimeRange(jam);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF9BC4FF),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Color(0xFFD9D9D9), width: 1),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.all(12),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Table(
-              columnWidths: const {
-                0: FixedColumnWidth(90),
-                1: FixedColumnWidth(10),
-                2: FlexColumnWidth(),
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            Text(
+              gedung,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              ruangan,
+              style: TextStyle(fontSize: 14, color: AppColors.textLight),
+            ),
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildRow('Gedung', gedung),
-                _buildRow('Ruangan', ruangan),
-                _buildRow('Tanggal', tanggal),
-                _buildRow('Jam', formattedJam),
-                _buildRow(
-                  'Reason',
-                  reason == '-' ? '-' : reason,
-                  italic: reason != '-',
+                Text(
+                  DateFormat(
+                    'EEE, dd MMM yyyy',
+                  ).format(DateTime.parse(tanggal)),
+                  style: TextStyle(fontSize: 16, color: AppColors.secondary),
+                ),
+                Text(
+                  formattedJam,
+                  style: TextStyle(fontSize: 16, color: AppColors.secondary),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 12),
+
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                status,
-                style: TextStyle(
-                  color: statusColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
+              color: statusBackColor,
+              padding: EdgeInsets.only(left: 10, right: 10, top: 4, bottom: 4),
+              child: Text(status, style: TextStyle(color: statusColor)),
+            ),
+            const Divider(color: Color(0xFFD9D9D9)),
+            Row(
+              children: [
+                const Icon(Icons.access_time, size: 22),
+                SizedBox(width: 3),
+                Text('Requested 07 Nov 2025', style: TextStyle(fontSize: 14)),
+              ],
             ),
           ],
         ),
       ),
+      // Padding(
+      //   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      //   child: Column(
+      //     children: [
+      //       Table(
+      //         columnWidths: const {
+      //           0: FixedColumnWidth(90),
+      //           1: FixedColumnWidth(10),
+      //           2: FlexColumnWidth(),
+      //         },
+      //         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      //         children: [
+      //           _buildRow('Gedung', gedung),
+      //           _buildRow('Ruangan', ruangan),
+      //           _buildRow('Tanggal', tanggal),
+      //           _buildRow('Jam', formattedJam),
+      //           _buildRow(
+      //             'Reason',
+      //             reason == '-' ? '-' : reason,
+      //             italic: reason != '-',
+      //           ),
+      //         ],
+      //       ),
+      //       const SizedBox(height: 10),
+      //       Container(
+      //         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      //         decoration: BoxDecoration(
+      //           color: Colors.white,
+      //           borderRadius: BorderRadius.circular(50),
+      //         ),
+      //         child: Text(
+      //           status,
+      //           style: TextStyle(
+      //             color: statusColor,
+      //             fontWeight: FontWeight.bold,
+      //             fontSize: 14,
+      //           ),
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 

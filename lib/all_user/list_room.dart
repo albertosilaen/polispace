@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:polispace/all_user/detail_room.dart';
+import 'package:polispace/constants/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -77,6 +78,10 @@ class _ListRoomPageState extends State<ListRoomPage> {
         roomsByCategory[selectedCategory] ?? [];
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        leading: BackButton(color: Colors.white),
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: buildings.isEmpty
@@ -110,82 +115,17 @@ class _ListRoomPageState extends State<ListRoomPage> {
   }
 
   Widget _buildHeader() {
+    double containerHeight = MediaQuery.of(context).size.height * 0.27;
+    double imageWidth =
+        containerHeight + (MediaQuery.of(context).size.height * 0.05);
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFFE5E5E5),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(40),
-          bottomRight: Radius.circular(40),
-        ),
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+      height: containerHeight,
+      color: AppColors.primary,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    const Text(
-                      "Gedung",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      buildings.length.toString(),
-                      style: const TextStyle(
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(width: 2, height: 70, color: Colors.black26),
-              Expanded(
-                child: Column(
-                  children: [
-                    const Text(
-                      "Ruang",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      roomsByCategory.values
-                          .fold<int>(0, (sum, list) => sum + list.length)
-                          .toString(),
-                      style: const TextStyle(
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "Atur jadwalmu, manfaatkan ruangmu",
-            style: TextStyle(fontSize: 14, color: Colors.black54),
-          ),
+          Image.asset('assets/images/building.png', width: imageWidth),
         ],
       ),
     );
@@ -197,22 +137,31 @@ class _ListRoomPageState extends State<ListRoomPage> {
       child: Row(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: buildings.map((b) {
-                  final title = b['BuildingName'];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 5),
-                    child: _buildCategoryButton(
-                      title,
-                      selectedCategory == title,
-                    ),
-                  );
-                }).toList(),
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.soft.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: buildings.map((b) {
+                    final title = b['BuildingName'];
+                    return Padding(
+                      padding: EdgeInsets.zero,
+                      child: _buildCategoryButton(
+                        title,
+                        selectedCategory == title,
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ),
+
           if (_accessID == 4)
             ElevatedButton(
               onPressed: () {},
@@ -237,10 +186,23 @@ class _ListRoomPageState extends State<ListRoomPage> {
       style: ElevatedButton.styleFrom(
         backgroundColor: isActive
             ? const Color(0xFF2D71F8)
-            : Colors.grey.shade400,
-        foregroundColor: Colors.white,
+            : AppColors.soft.withOpacity(0),
+        foregroundColor: isActive ? Colors.white : AppColors.text,
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        minimumSize: const Size(0, 0),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       ),
-      child: Text(title),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // const Icon(Icons.apartment, size: 18),
+          // const SizedBox(width: 8),
+          Text(title, style: const TextStyle(fontSize: 14)),
+        ],
+      ),
     );
   }
 
@@ -257,18 +219,46 @@ class _ListRoomPageState extends State<ListRoomPage> {
           ),
         );
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          "$roomId - $roomName",
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-      ),
+      child:
+          // Container(
+          //   margin: const EdgeInsets.only(bottom: 12),
+          //   padding: const EdgeInsets.all(14),
+          //   decoration: BoxDecoration(
+          //     color: AppColors.soft.withOpacity(0.5),
+          //     borderRadius: BorderRadius.circular(50),
+          //   ),
+          //   child: Text(
+          //     "$roomId - $roomName",
+          //     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          //   ),
+          // ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Color(0x80c0d4fd),
+                border: Border(
+                  left: BorderSide(color: AppColors.primary, width: 3),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(roomId, style: const TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4),
+                  Text(
+                    roomName,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
     );
   }
 }

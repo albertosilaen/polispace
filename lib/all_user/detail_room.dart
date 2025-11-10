@@ -96,7 +96,31 @@ class _RoomStatusState extends State<RoomDetail> {
         containerHeight + (MediaQuery.of(context).size.height * 0.05);
 
     return Scaffold(
-      appBar: AppBar(backgroundColor: AppColors.primary, leading: BackButton()),
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        leading: BackButton(color: Colors.white),
+      ),
+      floatingActionButton: _accessID == 2 || _accessID == 3
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RequestRoom(
+                      roomId: widget.roomId,
+                      roomName: widget.roomName,
+                    ),
+                  ),
+                );
+              },
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
+
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -174,38 +198,38 @@ class _RoomStatusState extends State<RoomDetail> {
                                     formattedDate,
                                     style: const TextStyle(fontSize: 14),
                                   ),
-                                  if (_accessID == 2 || _accessID == 3)
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => RequestRoom(
-                                              roomId: widget.roomId,
-                                              roomName: widget.roomName,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: AppColors.secondary,
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 14,
-                                            color: AppColors.secondary,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                  // if (_accessID == 2 || _accessID == 3)
+                                  //   GestureDetector(
+                                  //     onTap: () {
+                                  //       Navigator.push(
+                                  //         context,
+                                  //         MaterialPageRoute(
+                                  //           builder: (context) => RequestRoom(
+                                  //             roomId: widget.roomId,
+                                  //             roomName: widget.roomName,
+                                  //           ),
+                                  //         ),
+                                  //       );
+                                  //     },
+                                  //     child: Container(
+                                  //       width: 20,
+                                  //       height: 20,
+                                  //       decoration: BoxDecoration(
+                                  //         shape: BoxShape.circle,
+                                  //         border: Border.all(
+                                  //           color: AppColors.secondary,
+                                  //           width: 1,
+                                  //         ),
+                                  //       ),
+                                  //       child: const Center(
+                                  //         child: Icon(
+                                  //           Icons.add,
+                                  //           size: 14,
+                                  //           color: AppColors.secondary,
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -215,6 +239,7 @@ class _RoomStatusState extends State<RoomDetail> {
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
                                   child: Container(
+                                    width: double.infinity,
                                     decoration: const BoxDecoration(
                                       border: Border(
                                         left: BorderSide(

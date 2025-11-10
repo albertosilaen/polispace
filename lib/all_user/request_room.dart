@@ -142,7 +142,10 @@ class _RequestRoomState extends State<RequestRoom> {
     double imageWidth =
         containerHeight + (MediaQuery.of(context).size.height * 0.05);
     return Scaffold(
-      appBar: AppBar(backgroundColor: AppColors.primary, leading: BackButton()),
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        leading: BackButton(color: Colors.white),
+      ),
       body: ListView(
         children: [
           Column(
@@ -299,62 +302,82 @@ class _RequestRoomState extends State<RequestRoom> {
                           Row(
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  controller: _fromTimeController,
-                                  readOnly: true,
-                                  decoration: const InputDecoration(
-                                    labelText: "Jam Mulai",
-                                    prefixIcon: Icon(Icons.access_time),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.textLight,
-                                      ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Jam Mulai',
+                                      style: TextStyle(fontSize: 16),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.secondary,
-                                        width: 2,
+                                    TextFormField(
+                                      controller: _fromTimeController,
+                                      readOnly: true,
+                                      decoration: InputDecoration(
+                                        labelText: "Jam Mulai",
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: AppColors.textLight,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: AppColors.secondary,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        prefixIcon: Icon(Icons.access_time),
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.never,
                                       ),
+                                      onTap: () => _selectTime(
+                                        context,
+                                        _fromTimeController,
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Silakan pilih jam mulai';
+                                        }
+                                        return null;
+                                      },
                                     ),
-                                  ),
-                                  onTap: () =>
-                                      _selectTime(context, _fromTimeController),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Silakan pilih jam mulai';
-                                    }
-                                    return null;
-                                  },
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10),
                               Expanded(
-                                child: TextFormField(
-                                  controller: _toTimeController,
-                                  readOnly: true,
-                                  decoration: const InputDecoration(
-                                    labelText: "Jam Selesai",
-                                    prefixIcon: Icon(Icons.access_time),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.textLight,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Jam Selesai',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    TextField(
+                                      controller: _toTimeController,
+                                      readOnly: true,
+                                      decoration: InputDecoration(
+                                        labelText: "Jam Selesai",
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: AppColors.textLight,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: AppColors.secondary,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        prefixIcon: Icon(Icons.access_time),
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.never,
+                                      ),
+                                      onTap: () => _selectTime(
+                                        context,
+                                        _toTimeController,
                                       ),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.secondary,
-                                        width: 2,
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () =>
-                                      _selectTime(context, _toTimeController),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Silakan pilih jam selesai';
-                                    }
-                                    return null;
-                                  },
+                                  ],
                                 ),
                               ),
                             ],

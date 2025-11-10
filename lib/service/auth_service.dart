@@ -11,7 +11,7 @@ class AuthService {
     try {
       final response = await _supabase
           .from('tblProfile')
-          .select('UserID, Email, AccessID')
+          .select('*')
           .eq('Code', code)
           .maybeSingle();
 
