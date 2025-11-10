@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:polispace/penanggung_jawab/bookinglist_pj.dart';
+import 'package:polispace/all_user/booking_approval_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:polispace/all_user/booking_status.dart';
 import 'package:polispace/all_user/list_room.dart';
@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HistoryPage()),
+              MaterialPageRoute(builder: (context) => BookingStatus()),
             );
           },
         ),
@@ -90,7 +90,7 @@ class _HomeState extends State<Home> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HistoryPage()),
+              MaterialPageRoute(builder: (context) => BookingStatus()),
             );
           },
         ),
@@ -102,7 +102,7 @@ class _HomeState extends State<Home> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ListPengajuanPJ()),
+              MaterialPageRoute(builder: (context) => BookingApprovalList()),
             );
           },
         ),
@@ -117,7 +117,7 @@ class _HomeState extends State<Home> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ListPengajuanPJ()),
+              MaterialPageRoute(builder: (context) => BookingApprovalList()),
             );
           },
         ),

@@ -3,8 +3,6 @@ import 'package:polispace/service/auth_service.dart';
 import 'package:polispace/autentikasi/register.dart';
 import 'package:polispace/constants/colors.dart';
 import 'package:polispace/all_user/home.dart';
-import 'package:polispace/penanggung_jawab/home_pj.dart';
-import 'package:polispace/laboran/home_pic.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

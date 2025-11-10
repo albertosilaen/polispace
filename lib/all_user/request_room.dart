@@ -6,18 +6,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../service/request_room_service.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
-class Requestroom extends StatefulWidget {
+class RequestRoom extends StatefulWidget {
   final String roomId;
   final String roomName;
 
-  const Requestroom({Key? key, required this.roomId, required this.roomName})
+  const RequestRoom({Key? key, required this.roomId, required this.roomName})
     : super(key: key);
 
   @override
-  _RequestroomState createState() => _RequestroomState();
+  _RequestRoomState createState() => _RequestRoomState();
 }
 
-class _RequestroomState extends State<Requestroom> {
+class _RequestRoomState extends State<RequestRoom> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _activityController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -131,7 +131,7 @@ class _RequestroomState extends State<Requestroom> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HistoryPage()),
+        MaterialPageRoute(builder: (context) => BookingStatus()),
       );
     }
   }

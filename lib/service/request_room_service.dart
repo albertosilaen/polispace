@@ -1,14 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/material.dart';
 
 class RequestRoomService {
   final SupabaseClient _supabase = Supabase.instance.client;
-
-  Future<int?> getAccessID() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('AccessID');
-  }
 
   Future<List<Map<String, dynamic>>> getDosenList() async {
     try {
@@ -21,20 +14,6 @@ class RequestRoomService {
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       print('Error fetching dosen list: $e');
-      return [];
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getMahasiswaList() async {
-    try {
-      final response = await _supabase
-          .from('tblProfile')
-          .select('UserID, Name')
-          .eq('AccessID', 2);
-
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e) {
-      print('Error fetching mahasiswa list: $e');
       return [];
     }
   }

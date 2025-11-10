@@ -3,14 +3,14 @@ import 'package:polispace/all_user/home.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+class BookingStatus extends StatefulWidget {
+  const BookingStatus({super.key});
 
   @override
-  State<HistoryPage> createState() => _HistoryPageState();
+  State<BookingStatus> createState() => _BookingStatusState();
 }
 
-class _HistoryPageState extends State<HistoryPage> {
+class _BookingStatusState extends State<BookingStatus> {
   final supabase = Supabase.instance.client;
   List<dynamic> bookings = [];
   bool isLoading = true;
@@ -27,7 +27,6 @@ class _HistoryPageState extends State<HistoryPage> {
     final userId = prefs.getString('UserID');
 
     if (userId == null || userId.isEmpty) {
-      print('UserID tidak ditemukan di SharedPreferences');
       setState(() => isLoading = false);
       return;
     }
@@ -51,7 +50,6 @@ class _HistoryPageState extends State<HistoryPage> {
         isLoading = false;
       });
     } catch (e) {
-      print('Error fetching bookings: $e');
       setState(() => isLoading = false);
     }
   }
@@ -80,6 +78,23 @@ class _HistoryPageState extends State<HistoryPage> {
       default:
         return Colors.grey;
     }
+  }
+
+  String _formatTimeRange(String timeRange) {
+    if (timeRange.contains('-')) {
+      final parts = timeRange.split('-');
+      final start = parts[0].trim();
+      final end = parts.length > 1 ? parts[1].trim() : '';
+      return "${_formatTime(start)} - ${_formatTime(end)}";
+    }
+    return _formatTime(timeRange);
+  }
+
+  String _formatTime(String time) {
+    if (time.length >= 5) {
+      return time.substring(0, 5); // ambil HH:mm
+    }
+    return time;
   }
 
   @override
@@ -149,13 +164,12 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget _buildStatusCard({
     required String gedung,
     required String ruangan,
-    required String jam, // nanti akan diisi kombinasi StartTime-EndTime
+    required String jam, // kombinasi StartTime-EndTime
     required String tanggal,
     required String reason,
     required String status,
     required Color statusColor,
   }) {
-    // 🕒 Format jam agar hanya jam dan menit
     String formattedJam = _formatTimeRange(jam);
 
     return Container(
@@ -241,22 +255,5 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
       ],
     );
-  }
-
-  String _formatTimeRange(String timeRange) {
-    if (timeRange.contains('-')) {
-      final parts = timeRange.split('-');
-      final start = parts[0].trim();
-      final end = parts.length > 1 ? parts[1].trim() : '';
-      return "${_formatTime(start)} - ${_formatTime(end)}";
-    }
-    return _formatTime(timeRange);
-  }
-
-  String _formatTime(String time) {
-    if (time.length >= 5) {
-      return time.substring(0, 5); // ambil HH:mm
-    }
-    return time;
   }
 }

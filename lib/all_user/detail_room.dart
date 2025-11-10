@@ -180,7 +180,7 @@ class _RoomStatusState extends State<RoomDetail> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => Requestroom(
+                                            builder: (context) => RequestRoom(
                                               roomId: widget.roomId,
                                               roomName: widget.roomName,
                                             ),
