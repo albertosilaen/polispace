@@ -42,6 +42,7 @@ class AuthService {
     await prefs.setInt('AccessID', userData['AccessID']);
     await prefs.setString('UserID', userData['UserID']);
     await prefs.setString('Email', userData['Email']);
+    await prefs.setString('Name', userData['Name']);
   }
 
   /// 🔹 REGISTER

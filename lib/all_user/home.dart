@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:polispace/all_user/booking_status.dart';
 import 'package:polispace/all_user/list_room.dart';
 import 'package:polispace/service/auth_service.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,17 +15,19 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int? _accessID;
+  String? _userName;
 
   @override
   void initState() {
     super.initState();
-    _loadAccessID();
+    _loadSession();
   }
 
-  Future<void> _loadAccessID() async {
+  Future<void> _loadSession() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _accessID = prefs.getInt('AccessID');
+      _userName = prefs.getString('Name');
     });
   }
 
@@ -167,8 +168,8 @@ class _HomeState extends State<Home> {
                   ),
                   const SizedBox(height: 16),
 
-                  const Text(
-                    'Halo, Fahrizal',
+                  Text(
+                    'Halo, $_userName',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 28,

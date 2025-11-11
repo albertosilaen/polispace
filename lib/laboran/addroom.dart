@@ -68,17 +68,21 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
                     // Dropdown Gedung
                     const Text(
                       'Gedung',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String>(
-                      value: selectedGedung,
+                      initialValue: selectedGedung,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey.shade100,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -86,10 +90,12 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
                       ),
                       hint: const Text('Pilih Gedung'),
                       items: gedungList
-                          .map((gedung) => DropdownMenuItem(
-                                value: gedung,
-                                child: Text(gedung),
-                              ))
+                          .map(
+                            (gedung) => DropdownMenuItem(
+                              value: gedung,
+                              child: Text(gedung),
+                            ),
+                          )
                           .toList(),
                       onChanged: (value) {
                         setState(() {
@@ -181,8 +187,10 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+        ),
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
@@ -190,15 +198,18 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
             hintText: hint,
             filled: true,
             fillColor: Colors.grey.shade100,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
           ),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Field tidak boleh kosong' : null,
+          validator: (value) => value == null || value.isEmpty
+              ? 'Field tidak boleh kosong'
+              : null,
         ),
       ],
     );
@@ -217,8 +228,9 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           elevation: 4,
         ),
         onPressed: onPressed,

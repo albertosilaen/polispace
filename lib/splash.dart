@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
                 fontSize: 36,
-                color: const Color(0xFF2D71F8),
+                color: Color(0xFF2D71F8),
               ),
             ),
             const Text(
@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 30),
             const CircularProgressIndicator(
-              color: const Color(0xFF2D71F8),
+              color: Color(0xFF2D71F8),
               strokeWidth: 4,
             ),
           ],

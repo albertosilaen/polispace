@@ -10,8 +10,7 @@ class RequestRoom extends StatefulWidget {
   final String roomId;
   final String roomName;
 
-  const RequestRoom({Key? key, required this.roomId, required this.roomName})
-    : super(key: key);
+  const RequestRoom({super.key, required this.roomId, required this.roomName});
 
   @override
   _RequestRoomState createState() => _RequestRoomState();

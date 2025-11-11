@@ -39,14 +39,12 @@ class _RoomStatusState extends State<RoomDetail> {
 
   Future<void> _loadBookings() async {
     try {
-      // ambil data ruangan
       final dataRoom = await supabase
           .from('tblRoom')
           .select('RoomID, RoomName, BuildingID, tblBuilding(BuildingName)')
           .eq('RoomID', widget.roomId)
           .single();
 
-      // ambil data booking berdasarkan RoomID
       final dataRoomBooking = await supabase
           .from('tblRoomBooking')
           .select('*')
@@ -55,15 +53,22 @@ class _RoomStatusState extends State<RoomDetail> {
           .order('BookingDate', ascending: true)
           .order('StartTime', ascending: true);
 
-      // ubah menjadi List<Map>
       final List<Map<String, dynamic>> bookings =
           List<Map<String, dynamic>>.from(dataRoomBooking);
 
-      // group berdasarkan tanggal (BookingDate)
       final Map<String, List<Map<String, dynamic>>> grouped = {};
 
       for (final booking in bookings) {
+        final userID = booking['UserID'];
+        final profile = await supabase
+            .from('tblProfile')
+            .select('Name')
+            .eq('UserID', userID)
+            .maybeSingle();
+
         final date = booking['BookingDate'];
+        final userName = profile?['Name'] ?? 'Tidak diketahui';
+        booking['UserName'] = userName;
         grouped.putIfAbsent(date, () => []);
         grouped[date]!.add(booking);
       }
@@ -85,7 +90,7 @@ class _RoomStatusState extends State<RoomDetail> {
       final parsed = DateFormat("HH:mm:ss").parse(timeStr);
       return DateFormat("HH:mm").format(parsed);
     } catch (_) {
-      return timeStr; // fallback jika format tidak cocok
+      return timeStr;
     }
   }
 
@@ -257,8 +262,7 @@ class _RoomStatusState extends State<RoomDetail> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          status['tblUser']?['UserName'] ??
-                                              'Unknown',
+                                          status['UserName'] ?? 'Unknown',
                                           style: const TextStyle(fontSize: 14),
                                         ),
                                         const SizedBox(height: 4),

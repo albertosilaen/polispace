@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:polispace/constants/colors.dart';
 
 class RoomSubmissionPJ extends StatefulWidget {
+  const RoomSubmissionPJ({super.key});
+
   @override
   _RoomSubmissionPJState createState() => _RoomSubmissionPJState();
 }
@@ -171,7 +173,7 @@ class _RoomSubmissionPJState extends State<RoomSubmissionPJ> {
                             style: TextStyle(fontSize: 16),
                           ),
                           DropdownButtonFormField<String>(
-                            value: _selectedResponsible,
+                            initialValue: _selectedResponsible,
                             decoration: const InputDecoration(
                               labelText: 'Pilih Penanggung Jawab',
                               prefixIcon: Icon(

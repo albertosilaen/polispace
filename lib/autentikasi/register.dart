@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:polispace/service/auth_service.dart';
 import 'package:polispace/autentikasi/login.dart';
 import 'package:polispace/constants/colors.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -115,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 /// ROLE DROPDOWN
                 DropdownButtonFormField<String>(
-                  value: _selectedRole,
+                  initialValue: _selectedRole,
                   decoration: const InputDecoration(
                     labelText: 'Pilih Role',
                     prefixIcon: Icon(Icons.people, color: AppColors.secondary),
