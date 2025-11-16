@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/all_user/add_building.dart';
+import 'package:polispace/all_user/add_room.dart';
 import 'package:polispace/all_user/detail_room.dart';
+import 'package:polispace/all_user/home.dart';
 import 'package:polispace/constants/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -80,7 +83,15 @@ class _ListRoomPageState extends State<ListRoomPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        leading: BackButton(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+            );
+          },
+        ),
       ),
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -99,12 +110,25 @@ class _ListRoomPageState extends State<ListRoomPage> {
                         for (final room in currentRooms) _buildRoomItem(room),
                         if (_accessID == 4)
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AddRoomPage(),
+                                ),
+                              );
+
+                              if (result == true) {
+                                await _loadBuildingsAndRooms();
+                              }
+                            },
+
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF2D71F8),
                             ),
                             child: const Icon(Icons.add, color: Colors.white),
                           ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -164,7 +188,18 @@ class _ListRoomPageState extends State<ListRoomPage> {
 
           if (_accessID == 4)
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddBuildingPage(),
+                  ),
+                );
+
+                if (result == true) {
+                  await _loadBuildingsAndRooms();
+                }
+              },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
                 backgroundColor: const Color(0xFF2D71F8),

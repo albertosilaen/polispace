@@ -71,7 +71,7 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
         await supabase
             .from('tblRoomBooking')
             .update({
-              'StatusID': _accessID == 3 ? 1 : 2,
+              'StatusID': _accessID == 3 ? 4 : 2,
               'Approval1': _accessID == 3 ? _userID : bookingData?['Approval1'],
               'Approval1Date': _accessID == 3
                   ? DateTime.now().toIso8601String()

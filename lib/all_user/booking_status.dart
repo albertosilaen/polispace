@@ -79,6 +79,8 @@ class _BookingStatusState extends State<BookingStatus> {
         return 'Approved';
       case 3:
         return 'Rejected';
+      case 4:
+        return 'Verified';
       default:
         return '-';
     }
@@ -92,6 +94,8 @@ class _BookingStatusState extends State<BookingStatus> {
         return Color(0xFFD4F4D4);
       case 3:
         return Color(0xFFFDE7FE);
+      case 4:
+        return Color.fromARGB(255, 252, 254, 231);
       default:
         return Colors.grey;
     }
@@ -105,6 +109,8 @@ class _BookingStatusState extends State<BookingStatus> {
         return Color(0xFF41A06A);
       case 3:
         return Color(0xFFFE02B9);
+      case 4:
+        return Color.fromARGB(255, 254, 178, 2);
       default:
         return Colors.grey;
     }

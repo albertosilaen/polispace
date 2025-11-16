@@ -1,24 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:polispace/all_user/list_room.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:polispace/constants/colors.dart';
 
-class TambahRuanganPage extends StatefulWidget {
-  const TambahRuanganPage({super.key});
+final supabase = Supabase.instance.client;
+
+class AddRoomPage extends StatefulWidget {
+  const AddRoomPage({super.key});
 
   @override
-  State<TambahRuanganPage> createState() => _TambahRuanganPageState();
+  State<AddRoomPage> createState() => _AddRoomPageState();
 }
 
-class _TambahRuanganPageState extends State<TambahRuanganPage> {
+class _AddRoomPageState extends State<AddRoomPage> {
   final _formKey = GlobalKey<FormState>();
-  String? selectedGedung;
+  String? selectedBuildingID;
+
   final TextEditingController idRuanganController = TextEditingController();
   final TextEditingController namaRuanganController = TextEditingController();
-  final TextEditingController lokasiController = TextEditingController();
 
-  final List<String> gedungList = ['Gedung Utama', 'Gedung B', 'Gedung C'];
+  List<dynamic> buildingList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBuildings();
+  }
+
+  Future<void> fetchBuildings() async {
+    final response = await supabase.from('tblBuilding').select();
+
+    setState(() {
+      buildingList = response;
+    });
+  }
+
+  Future<void> saveRoom() async {
+    try {
+      await supabase.from('tblRoom').insert({
+        'RoomID': idRuanganController.text.trim(),
+        'RoomName': namaRuanganController.text.trim(),
+        'BuildingID': selectedBuildingID,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ruangan berhasil disimpan!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        title: const Text(
+          "Tambah Ruangan",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ListRoomPage()),
+            );
+          },
+        ),
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
@@ -43,29 +101,6 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Tambah Ruangan',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            height: 2,
-                            width: 150,
-                            color: Colors.black87,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Dropdown Gedung
                     const Text(
                       'Gedung',
                       style: TextStyle(
@@ -74,8 +109,9 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
                       ),
                     ),
                     const SizedBox(height: 6),
+
                     DropdownButtonFormField<String>(
-                      initialValue: selectedGedung,
+                      value: selectedBuildingID,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey.shade100,
@@ -89,17 +125,15 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
                         ),
                       ),
                       hint: const Text('Pilih Gedung'),
-                      items: gedungList
-                          .map(
-                            (gedung) => DropdownMenuItem(
-                              value: gedung,
-                              child: Text(gedung),
-                            ),
-                          )
-                          .toList(),
+                      items: buildingList.map<DropdownMenuItem<String>>((b) {
+                        return DropdownMenuItem<String>(
+                          value: b['BuildingID'] as String,
+                          child: Text(b['BuildingName'] as String),
+                        );
+                      }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedGedung = value;
+                          selectedBuildingID = value;
                         });
                       },
                       validator: (value) =>
@@ -124,18 +158,8 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
                       hint: 'Masukkan Nama Ruangan',
                     ),
 
-                    const SizedBox(height: 16),
-
-                    // Lokasi
-                    _buildTextField(
-                      controller: lokasiController,
-                      label: 'Lokasi',
-                      hint: 'Masukkan Lokasi Ruangan',
-                    ),
-
                     const SizedBox(height: 28),
 
-                    // Tombol Save & Delete
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -145,24 +169,22 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
                           icon: Icons.save,
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Ruangan berhasil disimpan!'),
-                                ),
-                              );
+                              saveRoom();
+
+                              if (!mounted) return;
+                              Navigator.pop(context, true);
                             }
                           },
                         ),
                         _buildButton(
-                          text: 'Delete',
+                          text: 'Clear',
                           color: Colors.red.shade500,
                           icon: Icons.delete,
                           onPressed: () {
                             idRuanganController.clear();
                             namaRuanganController.clear();
-                            lokasiController.clear();
                             setState(() {
-                              selectedGedung = null;
+                              selectedBuildingID = null;
                             });
                           },
                         ),
@@ -178,7 +200,6 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
     );
   }
 
-  // Reusable Text Field
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -215,7 +236,6 @@ class _TambahRuanganPageState extends State<TambahRuanganPage> {
     );
   }
 
-  // Reusable Button
   Widget _buildButton({
     required String text,
     required Color color,
