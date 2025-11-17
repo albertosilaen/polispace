@@ -142,6 +142,15 @@ class _RequestRoomState extends State<RequestRoom> {
         containerHeight + (MediaQuery.of(context).size.height * 0.05);
     return Scaffold(
       appBar: AppBar(
+        title: const Text(
+          "Peminjaman Ruangan",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
         backgroundColor: AppColors.primary,
         leading: BackButton(color: Colors.white),
       ),
@@ -199,7 +208,6 @@ class _RequestRoomState extends State<RequestRoom> {
                                 isExpanded: true,
                                 value: _selectedResponsible,
                                 decoration: const InputDecoration(
-                                  labelText: 'Pilih Penanggung Jawab',
                                   prefixIcon: Icon(
                                     Icons.people,
                                     color: AppColors.secondary,
@@ -221,6 +229,7 @@ class _RequestRoomState extends State<RequestRoom> {
                                     horizontal: 12,
                                   ),
                                 ),
+                                hint: const Text('Pilih Penanggung Jawab'),
                                 items: _dosen
                                     .map(
                                       (d) => DropdownMenuItem<String>(
@@ -259,8 +268,7 @@ class _RequestRoomState extends State<RequestRoom> {
                                 ),
                               ),
                             ),
-
-                          const SizedBox(height: 10),
+                          if (_accessID == 2) const SizedBox(height: 10),
                           const Text(
                             'Tanggal Penggunaan',
                             style: TextStyle(fontSize: 16),

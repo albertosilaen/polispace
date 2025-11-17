@@ -17,6 +17,8 @@ class _BookingStatusState extends State<BookingStatus> {
   List<dynamic> bookings = [];
   bool isLoading = true;
   String? _userID;
+  int? selectedCategory = 0;
+  List<dynamic> categories = [0, 1, 2, 3, 4];
 
   @override
   void initState() {
@@ -82,7 +84,7 @@ class _BookingStatusState extends State<BookingStatus> {
       case 4:
         return 'Verified';
       default:
-        return '-';
+        return 'All';
     }
   }
 
@@ -93,7 +95,7 @@ class _BookingStatusState extends State<BookingStatus> {
       case 2:
         return Color(0xFFD4F4D4);
       case 3:
-        return Color(0xFFFDE7FE);
+        return Color.fromARGB(255, 254, 231, 234);
       case 4:
         return Color.fromARGB(255, 252, 254, 231);
       default:
@@ -108,7 +110,7 @@ class _BookingStatusState extends State<BookingStatus> {
       case 2:
         return Color(0xFF41A06A);
       case 3:
-        return Color(0xFFFE02B9);
+        return Color.fromARGB(255, 254, 10, 2);
       case 4:
         return Color.fromARGB(255, 254, 178, 2);
       default:
@@ -135,6 +137,13 @@ class _BookingStatusState extends State<BookingStatus> {
 
   @override
   Widget build(BuildContext context) {
+    final filteredBookings = selectedCategory == 0
+        ? bookings
+        : bookings.where((b) {
+            final statusId = b['StatusID'] ?? 0;
+            return statusId == selectedCategory;
+          }).toList();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FB),
       appBar: AppBar(
@@ -160,42 +169,57 @@ class _BookingStatusState extends State<BookingStatus> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(0),
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : bookings.isEmpty
               ? const Center(
                   child: Text(
                     "Belum ada riwayat peminjaman",
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                    style: TextStyle(fontSize: 20, color: Colors.black54),
                   ),
                 )
-              : RefreshIndicator(
-                  onRefresh: () async {
-                    if (_userID != null) await fetchBookings(_userID!);
-                  },
-                  child: ListView.builder(
-                    itemCount: bookings.length,
-                    itemBuilder: (context, index) {
-                      final item = bookings[index];
-                      final statusId = item['StatusID'] ?? 0;
-                      return _buildStatusCard(
-                        gedung:
-                            item['tblRoom']['tblBuilding']['BuildingName']
-                                ?.split('.')[0] ??
-                            '-',
-                        ruangan:
-                            '${item['tblRoom']['RoomID']} - ${item['tblRoom']['RoomName']}',
-                        jam:
-                            "${item['StartTime'] ?? '-'} - ${item['EndTime'] ?? '-'}",
-                        tanggal: item['BookingDate'] ?? '-',
-                        reason: item['Reason'] ?? '-',
-                        status: getStatusText(statusId),
-                        statusColor: getStatusColor(statusId),
-                        statusBackColor: getStaturBackColor(statusId),
-                      );
-                    },
-                  ),
+              : Column(
+                  children: [
+                    SizedBox(height: 16),
+                    _buildCategoryRow(),
+
+                    // Bagian daftar booking harus berada dalam Expanded
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          if (_userID != null) await fetchBookings(_userID!);
+                        },
+
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          physics:
+                              const AlwaysScrollableScrollPhysics(), // wajib agar RefreshIndicator berfungsi
+                          itemCount: filteredBookings.length,
+                          itemBuilder: (context, index) {
+                            final item = filteredBookings[index];
+                            final statusId = item['StatusID'] ?? 0;
+
+                            return _buildStatusCard(
+                              gedung:
+                                  item['tblRoom']['tblBuilding']['BuildingName']
+                                      ?.split('.')[0] ??
+                                  '-',
+                              ruangan:
+                                  '${item['tblRoom']['RoomID']} - ${item['tblRoom']['RoomName']}',
+                              jam:
+                                  "${item['StartTime'] ?? '-'} - ${item['EndTime'] ?? '-'}",
+                              tanggal: item['BookingDate'] ?? '-',
+                              reason: item['Reason'] ?? '-',
+                              status: getStatusText(statusId),
+                              statusColor: getStatusColor(statusId),
+                              statusBackColor: getStaturBackColor(statusId),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
         ),
       ),
@@ -217,23 +241,18 @@ class _BookingStatusState extends State<BookingStatus> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Color(0xFFD9D9D9), width: 1),
+        // borderRadius: BorderRadius.circular(8),
+        // border: Border.all(color: Color(0xFFD9D9D9), width: 1),
+        border: Border(left: BorderSide(color: AppColors.primary, width: 3)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              gedung,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              ruangan,
-              style: TextStyle(fontSize: 14, color: AppColors.textLight),
-            ),
-            SizedBox(height: 12),
+            // Text(gedung, style: TextStyle(fontSize: 14)),
+            Text(ruangan, style: TextStyle(fontSize: 14)),
+            SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -241,27 +260,47 @@ class _BookingStatusState extends State<BookingStatus> {
                   DateFormat(
                     'EEE, dd MMM yyyy',
                   ).format(DateTime.parse(tanggal)),
-                  style: TextStyle(fontSize: 16, color: AppColors.secondary),
+                  style: TextStyle(fontSize: 18),
                 ),
-                Text(
-                  formattedJam,
-                  style: TextStyle(fontSize: 16, color: AppColors.secondary),
-                ),
+                Text(formattedJam, style: TextStyle(fontSize: 18)),
               ],
             ),
-            SizedBox(height: 12),
+            SizedBox(height: 4),
 
-            Container(
-              color: statusBackColor,
-              padding: EdgeInsets.only(left: 10, right: 10, top: 4, bottom: 4),
-              child: Text(status, style: TextStyle(color: statusColor)),
-            ),
-            const Divider(color: Color(0xFFD9D9D9)),
+            // const Divider(color: Color(0xFFD9D9D9)),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.access_time, size: 22),
-                SizedBox(width: 3),
-                Text('Requested 07 Nov 2025', style: TextStyle(fontSize: 14)),
+                Row(
+                  children: [
+                    // const Icon(
+                    //   Icons.access_time,
+                    //   size: 22,
+                    //   color: AppColors.textLight,
+                    // ),
+                    // SizedBox(width: 3),
+                    Text(
+                      'Requested 07 Nov 2025',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textLight,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  color: statusBackColor,
+                  padding: EdgeInsets.only(
+                    left: 10,
+                    right: 10,
+                    top: 4,
+                    bottom: 4,
+                  ),
+                  child: Text(
+                    status,
+                    style: TextStyle(fontSize: 12, color: statusColor),
+                  ),
+                ),
               ],
             ),
           ],
@@ -312,30 +351,64 @@ class _BookingStatusState extends State<BookingStatus> {
     );
   }
 
-  TableRow _buildRow(String label, String value, {bool italic = false}) {
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w500),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 4),
-          child: Text(':'),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Text(
-            value,
-            style: TextStyle(
-              fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+  Widget _buildCategoryRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.soft.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: categories.map((c) {
+                    return Padding(
+                      padding: EdgeInsets.zero,
+                      child: _buildCategoryButton(c, selectedCategory == c),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryButton(int title, bool isActive) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedCategory = title;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isActive
+            ? const Color(0xFF2D71F8)
+            : AppColors.soft.withOpacity(0),
+        foregroundColor: isActive ? Colors.white : AppColors.text,
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        minimumSize: const Size(0, 0),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // const Icon(Icons.apartment, size: 18),
+          // const SizedBox(width: 8),
+          Text(getStatusText(title), style: const TextStyle(fontSize: 14)),
+        ],
+      ),
     );
   }
 }

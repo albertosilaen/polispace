@@ -42,6 +42,10 @@ class _AddBuildingPageState extends State<AddBuildingPage> {
 
   @override
   Widget build(BuildContext context) {
+    double containerHeight = MediaQuery.of(context).size.height * 0.27;
+    double imageWidth =
+        containerHeight + (MediaQuery.of(context).size.height * 0.05);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primary,
@@ -65,77 +69,112 @@ class _AddBuildingPageState extends State<AddBuildingPage> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: containerHeight,
+            color: AppColors.primary,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Image.asset('assets/images/building.png', width: imageWidth),
+              ],
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            // decoration: BoxDecoration(
+            //   color: Colors.white,
+            //   borderRadius: BorderRadius.circular(24),
+            //   boxShadow: [
+            //     BoxShadow(
+            //       color: Colors.black.withOpacity(0.1),
+            //       blurRadius: 10,
+            //       offset: const Offset(0, 4),
+            //     ),
+            //   ],
+            // ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ID Gedung
+                  _buildTextField(
+                    controller: idBangunanController,
+                    label: 'ID Gedung',
+                    hint: 'Masukkan ID Gedung',
+                    icon: Icons.tag,
+                  ),
+                  const SizedBox(height: 10),
+                  // Nama Gedung
+                  _buildTextField(
+                    controller: namaBangunanController,
+                    label: 'Nama Gedung',
+                    hint: 'Masukkan Nama Gedung',
+                    icon: Icons.business,
+                  ),
+                  const SizedBox(height: 16),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     _buildButton(
+                  //       text: 'Save',
+                  //       color: Colors.green.shade500,
+                  //       icon: Icons.save,
+                  //       onPressed: () {
+                  //         if (_formKey.currentState!.validate()) {
+                  //           saveBuilding();
+
+                  //           if (!mounted) return;
+                  //           Navigator.pop(context, true);
+                  //         }
+                  //       },
+                  //     ),
+                  //     _buildButton(
+                  //       text: 'Clear',
+                  //       color: Colors.red.shade500,
+                  //       icon: Icons.delete,
+                  //       onPressed: () {
+                  //         idBangunanController.clear();
+                  //         namaBangunanController.clear();
+                  //       },
+                  //     ),
+                  //   ],
+                  // ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          saveBuilding();
+
+                          if (!mounted) return;
+                          Navigator.pop(context, true);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        textStyle: const TextStyle(fontSize: 18),
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 20,
+                        ),
+                      ),
+                      child: const Text('Simpan'),
+                    ),
                   ),
                 ],
               ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 6),
-                    // ID Gedung
-                    _buildTextField(
-                      controller: idBangunanController,
-                      label: 'ID Gedung',
-                      hint: 'Masukkan ID Gedung',
-                    ),
-                    const SizedBox(height: 16),
-                    // Nama Gedung
-                    _buildTextField(
-                      controller: namaBangunanController,
-                      label: 'Nama Gedung',
-                      hint: 'Masukkan Nama Gedung',
-                    ),
-                    const SizedBox(height: 28),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildButton(
-                          text: 'Save',
-                          color: Colors.green.shade500,
-                          icon: Icons.save,
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              saveBuilding();
-
-                              if (!mounted) return;
-                              Navigator.pop(context, true);
-                            }
-                          },
-                        ),
-                        _buildButton(
-                          text: 'Clear',
-                          color: Colors.red.shade500,
-                          icon: Icons.delete,
-                          onPressed: () {
-                            idBangunanController.clear();
-                            namaBangunanController.clear();
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -144,29 +183,25 @@ class _AddBuildingPageState extends State<AddBuildingPage> {
     required TextEditingController controller,
     required String label,
     required String hint,
+    required IconData icon,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-        ),
-        const SizedBox(height: 6),
+        Text(label, style: const TextStyle(fontSize: 16)),
         TextFormField(
           controller: controller,
           decoration: InputDecoration(
-            hintText: hint,
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
+            labelText: hint,
+            prefixIcon: Icon(icon, color: AppColors.secondary),
+            border: const OutlineInputBorder(),
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppColors.textLight),
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppColors.secondary, width: 2),
             ),
+            floatingLabelBehavior: FloatingLabelBehavior.never,
           ),
           validator: (value) => value == null || value.isEmpty
               ? 'Field tidak boleh kosong'

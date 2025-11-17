@@ -102,6 +102,15 @@ class _RoomStatusState extends State<RoomDetail> {
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text(
+          "Detail Ruangan",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
         backgroundColor: AppColors.primary,
         leading: BackButton(color: Colors.white),
       ),

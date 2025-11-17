@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:polispace/all_user/add_building.dart';
 import 'package:polispace/all_user/add_room.dart';
 import 'package:polispace/all_user/detail_room.dart';
@@ -82,6 +83,16 @@ class _ListRoomPageState extends State<ListRoomPage> {
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text(
+          "Daftar Ruangan",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+
         backgroundColor: AppColors.primary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -94,6 +105,74 @@ class _ListRoomPageState extends State<ListRoomPage> {
         ),
       ),
       backgroundColor: Colors.white,
+      floatingActionButton: _accessID == 4
+          ? SpeedDial(
+              icon: Icons.add,
+              foregroundColor: Colors.white,
+              activeIcon: Icons.close,
+              activeForegroundColor: Colors.white,
+              backgroundColor: const Color(0xFF2D71F8),
+
+              children: [
+                SpeedDialChild(
+                  shape: const CircleBorder(),
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF2D71F8),
+                  child: const Icon(Icons.door_front_door),
+                  labelWidget: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(color: AppColors.primary, width: 3),
+                      ),
+                      color: AppColors.soft.withOpacity(0.5),
+                      // borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text("Tambah Ruangan"),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddRoomPage(),
+                      ),
+                    );
+                  },
+                ),
+                SpeedDialChild(
+                  shape: const CircleBorder(),
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF2D71F8),
+                  child: const Icon(Icons.business),
+                  labelWidget: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(color: AppColors.primary, width: 3),
+                      ),
+                      color: AppColors.soft.withOpacity(0.5),
+                      // borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text("Tambah Gedung"),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddBuildingPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            )
+          : null,
       body: SafeArea(
         child: buildings.isEmpty
             ? const Center(child: CircularProgressIndicator())
@@ -108,27 +187,44 @@ class _ListRoomPageState extends State<ListRoomPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       children: [
                         for (final room in currentRooms) _buildRoomItem(room),
-                        if (_accessID == 4)
-                          ElevatedButton(
-                            onPressed: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const AddRoomPage(),
-                                ),
-                              );
+                        // if (_accessID == 4)
+                        //   Container(
+                        //     padding: const EdgeInsets.all(4),
+                        //     decoration: BoxDecoration(
+                        //       color: AppColors.soft.withOpacity(0.5),
+                        //       borderRadius: BorderRadius.circular(50),
+                        //     ),
+                        //     child: ElevatedButton(
+                        //       onPressed: () async {
+                        //         final result = await Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (context) => const AddRoomPage(),
+                        //           ),
+                        //         );
 
-                              if (result == true) {
-                                await _loadBuildingsAndRooms();
-                              }
-                            },
+                        //         if (result == true) {
+                        //           await _loadBuildingsAndRooms();
+                        //         }
+                        //       },
 
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2D71F8),
-                            ),
-                            child: const Icon(Icons.add, color: Colors.white),
-                          ),
-                        const SizedBox(height: 20),
+                        //       style: ElevatedButton.styleFrom(
+                        //         padding: const EdgeInsets.symmetric(
+                        //           horizontal: 18,
+                        //           vertical: 18,
+                        //         ),
+
+                        //         backgroundColor: const Color(0xFF2D71F8),
+                        //       ),
+
+                        //       child: const Text(
+                        //         'Tambah Ruangan',
+                        //         style: TextStyle(color: Colors.white),
+                        //       ),
+                        //     ),
+                        //   ),
+
+                        // const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -159,6 +255,7 @@ class _ListRoomPageState extends State<ListRoomPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: Container(
@@ -186,26 +283,34 @@ class _ListRoomPageState extends State<ListRoomPage> {
             ),
           ),
 
-          if (_accessID == 4)
-            ElevatedButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddBuildingPage(),
-                  ),
-                );
-
-                if (result == true) {
-                  await _loadBuildingsAndRooms();
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                backgroundColor: const Color(0xFF2D71F8),
-              ),
-              child: const Icon(Icons.add, color: Colors.white),
-            ),
+          // if (_accessID == 4)
+          //   Container(
+          //     padding: const EdgeInsets.all(4),
+          //     decoration: const BoxDecoration(
+          //       color: Color(0xFFE0E7FF),
+          //       shape: BoxShape.circle,
+          //     ),
+          //     child: ElevatedButton(
+          //       onPressed: () async {
+          //         final result = await Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder: (context) => const AddBuildingPage(),
+          //           ),
+          //         );
+          //         if (result == true) {
+          //           await _loadBuildingsAndRooms();
+          //         }
+          //       },
+          //       style: ElevatedButton.styleFrom(
+          //         shape: const CircleBorder(),
+          //         backgroundColor: const Color(0xFF2D71F8),
+          //         padding: const EdgeInsets.all(20),
+          //         elevation: 0,
+          //       ),
+          //       child: const Icon(Icons.add, color: Colors.white),
+          //     ),
+          //   ),
         ],
       ),
     );

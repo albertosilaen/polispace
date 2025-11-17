@@ -115,6 +115,10 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
 
   @override
   Widget build(BuildContext context) {
+    double containerHeight = MediaQuery.of(context).size.height * 0.27;
+    double imageWidth =
+        containerHeight + (MediaQuery.of(context).size.height * 0.05);
+
     if (loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -132,39 +136,30 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
     final endTime = booking['EndTime'].toString().substring(0, 5);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Pengajuan Peminjaman",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: AppColors.primary,
+        leading: BackButton(color: Colors.white),
+      ),
       body: Column(
         children: [
           Container(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.27,
+            height: containerHeight,
             color: AppColors.primary,
-            child: SafeArea(
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 12,
-                    top: 12,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Image.asset(
-                      'assets/images/building.png',
-                      width: 300,
-                    ),
-                  ),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Image.asset('assets/images/building.png', width: imageWidth),
+              ],
             ),
           ),
 
@@ -186,36 +181,59 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
                     booking['tblRoom']['RoomName'],
                     style: TextStyle(fontSize: 14, color: AppColors.textLight),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   const Text(
                     'Penanggung Jawab',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 6),
                   TextFormField(
                     initialValue: profileName,
                     readOnly: true,
                     decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      isDense: true,
+                      prefixIcon: Icon(
+                        Icons.people,
+                        color: AppColors.secondary,
+                        size: 20,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.textLight),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Tanggal',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 10),
+                  const Text('Tanggal', style: TextStyle(fontSize: 16)),
                   TextFormField(
                     initialValue: date,
                     readOnly: true,
                     decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.calendar_today),
+                      prefixIcon: Icon(
+                        Icons.calendar_today,
+                        color: AppColors.secondary,
+                      ),
                       border: OutlineInputBorder(),
-                      isDense: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.textLight),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
@@ -224,16 +242,26 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
                           children: [
                             const Text(
                               'Jam Mulai',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 16),
                             ),
-                            const SizedBox(height: 4),
                             TextFormField(
                               initialValue: startTime,
                               readOnly: true,
                               decoration: const InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.textLight,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.secondary,
+                                    width: 2,
+                                  ),
+                                ),
                                 prefixIcon: Icon(Icons.access_time),
-                                border: OutlineInputBorder(),
-                                isDense: true,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
                               ),
                             ),
                           ],
@@ -246,16 +274,26 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
                           children: [
                             const Text(
                               'Jam Selesai',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 16),
                             ),
-                            const SizedBox(height: 4),
                             TextFormField(
                               initialValue: endTime,
                               readOnly: true,
                               decoration: const InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.textLight,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.secondary,
+                                    width: 2,
+                                  ),
+                                ),
                                 prefixIcon: Icon(Icons.access_time),
-                                border: OutlineInputBorder(),
-                                isDense: true,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
                               ),
                             ),
                           ],
@@ -263,12 +301,11 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   const Text(
                     'Alasan Meminjam Ruangan',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 4),
                   TextField(
                     controller: TextEditingController(
                       text: booking['Reason'] ?? 'Tidak ada alasan',
@@ -276,53 +313,34 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
                     readOnly: true,
                     maxLines: 3,
                     decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.textLight),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(4),
                             ),
-                            minimumSize: const Size(double.infinity, 60),
-                            elevation: 3,
-                          ),
-                          onPressed: () async {
-                            await updateApproval(1); // ✅ Approve
-
-                            if (!mounted) return;
-                            Navigator.pop(context);
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Ruangan berhasil disetujui'),
-                              ),
-                            );
-
-                            Navigator.pop(context, true);
-                          },
-                          child: const Text(
-                            'Approve',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                            textStyle: const TextStyle(fontSize: 18),
+                            backgroundColor: AppColors.danger,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 20,
                             ),
-                            minimumSize: const Size(double.infinity, 60),
                           ),
                           onPressed: () async {
                             await updateApproval(2); // ❌ Reject
@@ -340,13 +358,48 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
                           },
                           child: const Text(
                             'Reject',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            textStyle: const TextStyle(fontSize: 18),
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 20,
+                            ),
+                          ),
+                          onPressed: () async {
+                            await updateApproval(1); // ✅ Approve
+
+                            if (!mounted) return;
+                            Navigator.pop(context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Ruangan berhasil disetujui'),
+                              ),
+                            );
+
+                            Navigator.pop(context, true);
+                          },
+                          child: const Text(
+                            'Approve',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
                 ],
               ),
             ),

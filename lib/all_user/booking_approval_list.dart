@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:polispace/all_user/booking_approval_form.dart';
+import 'package:polispace/all_user/home.dart';
+import 'package:polispace/constants/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -117,17 +119,25 @@ class _BookingApprovalListState extends State<BookingApprovalList> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: AppColors.primary,
         title: const Text(
-          'Daftar Pengajuan Ruangan',
+          'Daftar Pengajuan',
           style: TextStyle(
-            color: Colors.black87,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+            );
+          },
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -177,78 +187,49 @@ class _BookingApprovalListState extends State<BookingApprovalList> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF9BC4FF),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12.withOpacity(0.15),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          // borderRadius: BorderRadius.circular(8),
+          // border: Border.all(color: Color(0xFFD9D9D9), width: 1),
+          border: Border(left: BorderSide(color: AppColors.primary, width: 3)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                fit: FlexFit.tight,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      ruangan,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      nama,
-                      softWrap: true,
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      tanggal,
-                      style: const TextStyle(
-                        color: Colors.black54,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
+              // Text(gedung, style: TextStyle(fontSize: 14)),
+              Text(ruangan, style: TextStyle(fontSize: 14)),
+              SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(tanggal, style: TextStyle(fontSize: 18)),
+                  Text(jam, style: TextStyle(fontSize: 18)),
+                ],
               ),
+              SizedBox(height: 4),
 
-              const SizedBox(width: 8),
-
-              // Kolom kanan (jam)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEEF2FF),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  jam,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3B3B3B),
-                    fontSize: 13,
+              // const Divider(color: Color(0xFFD9D9D9)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      // const Icon(
+                      //   Icons.access_time,
+                      //   size: 22,
+                      //   color: AppColors.textLight,
+                      // ),
+                      // SizedBox(width: 3),
+                      Text(
+                        nama,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textLight,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
             ],
           ),
