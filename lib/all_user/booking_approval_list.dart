@@ -202,35 +202,29 @@ class _BookingApprovalListState extends State<BookingApprovalList> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(tanggal, style: TextStyle(fontSize: 18)),
+                  Expanded(
+                    child: Text(
+                      tanggal,
+                      style: TextStyle(fontSize: 18),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  SizedBox(width: 8),
                   Text(jam, style: TextStyle(fontSize: 18)),
                 ],
               ),
-              SizedBox(height: 4),
-
               // const Divider(color: Color(0xFFD9D9D9)),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      // const Icon(
-                      //   Icons.access_time,
-                      //   size: 22,
-                      //   color: AppColors.textLight,
-                      // ),
-                      // SizedBox(width: 3),
-                      Text(
-                        nama,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textLight,
-                        ),
-                      ),
-                    ],
+                  Expanded(
+                    child: Text(
+                      nama,
+                      style: TextStyle(fontSize: 14, color: AppColors.textLight),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),
