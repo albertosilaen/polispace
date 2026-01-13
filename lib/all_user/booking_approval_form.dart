@@ -163,7 +163,8 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
             ),
           ),
 
-          Padding(
+          Expanded(
+            child: Padding(
             padding: const EdgeInsets.all(16),
 
             child: SingleChildScrollView(
@@ -404,6 +405,8 @@ class _BookingApprovalFormState extends State<BookingApprovalForm> {
               ),
             ),
           ),
+          ),
+          
         ],
       ),
     );
