@@ -103,9 +103,11 @@ class AuthService {
       final response = await _supabase
           .from('tblAccess')
           .select('AccessID, AccessName');
-      return (response as List).cast<Map<String, dynamic>>();
+
+      return (response as List?)?.cast<Map<String, dynamic>>() ?? [];
     } catch (e) {
-      rethrow;
+      debugPrint('getRoles error: $e');
+      return [];
     }
   }
 

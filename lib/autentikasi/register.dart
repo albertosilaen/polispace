@@ -53,6 +53,13 @@ class _RegisterPageState extends State<RegisterPage> {
       orElse: () => {},
     );
 
+    if (selectedAccess.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Role tidak valid')));
+      return;
+    }
+
     final accessID = selectedAccess['AccessID'];
 
     final errorMessage = await _authService.register(
@@ -129,19 +136,23 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                   ),
-                  items: _roles
-                      .map(
-                        (item) => DropdownMenuItem<String>(
-                          value: item['AccessName'],
-                          child: Text(item['AccessName']),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedRole = newValue;
-                    });
-                  },
+                  items: _roles.isEmpty
+                      ? []
+                      : _roles
+                            .map(
+                              (item) => DropdownMenuItem<String>(
+                                value: item['AccessName'],
+                                child: Text(item['AccessName']),
+                              ),
+                            )
+                            .toList(),
+                  onChanged: _roles.isEmpty
+                      ? null
+                      : (newValue) {
+                          setState(() {
+                            _selectedRole = newValue;
+                          });
+                        },
                   validator: (value) =>
                       value == null ? 'Silakan pilih role' : null,
                 ),
