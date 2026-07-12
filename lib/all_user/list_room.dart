@@ -20,6 +20,7 @@ class _ListRoomPageState extends State<ListRoomPage> {
 
   int? _accessID;
   String? selectedCategory;
+  bool _isLoading = true;
 
   List<Map<String, dynamic>> buildings = [];
   Map<String, List<Map<String, String>>> roomsByCategory = {};
@@ -70,9 +71,12 @@ class _ListRoomPageState extends State<ListRoomPage> {
         if (buildings.isNotEmpty) {
           selectedCategory = buildings.first['BuildingName'];
         }
+        _isLoading = false;
       });
     } catch (e) {
       debugPrint('Error load data: $e');
+      if (!mounted) return;
+      setState(() => _isLoading = false);
     }
   }
 
@@ -174,8 +178,19 @@ class _ListRoomPageState extends State<ListRoomPage> {
             )
           : null,
       body: SafeArea(
-        child: buildings.isEmpty
+        child: _isLoading
             ? const Center(child: CircularProgressIndicator())
+            : buildings.isEmpty
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: Text(
+                    'Belum ada data gedung/ruangan.\nHubungi PIC/Laboran untuk menambahkan.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.textLight, fontSize: 14),
+                  ),
+                ),
+              )
             : Column(
                 children: [
                   _buildHeader(),
@@ -183,50 +198,31 @@ class _ListRoomPageState extends State<ListRoomPage> {
                   _buildCategoryRow(),
                   const SizedBox(height: 20),
                   Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      children: [
-                        for (final room in currentRooms) _buildRoomItem(room),
-                        // if (_accessID == 4)
-                        //   Container(
-                        //     padding: const EdgeInsets.all(4),
-                        //     decoration: BoxDecoration(
-                        //       color: AppColors.soft.withOpacity(0.5),
-                        //       borderRadius: BorderRadius.circular(50),
-                        //     ),
-                        //     child: ElevatedButton(
-                        //       onPressed: () async {
-                        //         final result = await Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(
-                        //             builder: (context) => const AddRoomPage(),
-                        //           ),
-                        //         );
-
-                        //         if (result == true) {
-                        //           await _loadBuildingsAndRooms();
-                        //         }
-                        //       },
-
-                        //       style: ElevatedButton.styleFrom(
-                        //         padding: const EdgeInsets.symmetric(
-                        //           horizontal: 18,
-                        //           vertical: 18,
-                        //         ),
-
-                        //         backgroundColor: const Color(0xFF2D71F8),
-                        //       ),
-
-                        //       child: const Text(
-                        //         'Tambah Ruangan',
-                        //         style: TextStyle(color: Colors.white),
-                        //       ),
-                        //     ),
-                        //   ),
-
-                        // const SizedBox(height: 20),
-                      ],
-                    ),
+                    child: currentRooms.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Text(
+                                _accessID == 4
+                                    ? 'Belum ada ruangan di gedung ini.\nTekan tombol (+) untuk menambahkan.'
+                                    : 'Belum ada ruangan di gedung ini.',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: AppColors.textLight,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          )
+                        : ListView(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                            children: [
+                              for (final room in currentRooms)
+                                _buildRoomItem(room),
+                            ],
+                          ),
                   ),
                 ],
               ),
